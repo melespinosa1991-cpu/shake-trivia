@@ -178,6 +178,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
 .reset-btn:hover{background:var(--red-light)}
 
 @media(max-width:480px){body{padding:10px 8px 32px}.qbtn{font-size:10px}.htdisp,.tdisp{font-size:22px}.houses,.hsel-grid{grid-template-columns:repeat(2,1fr)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 </style>
 </head>
 <body>
@@ -785,6 +786,7 @@ function renderCuentas() {
           </div>
         </div>
         <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">${sit.desc}</div>
+        ${s.obstacleMsg ? `<div style="background:#FAEEDA;border:1.5px solid #BA7517;border-radius:var(--r);padding:10px 14px;margin-bottom:10px;font-size:13px;color:#633806;font-weight:500;display:flex;align-items:center;gap:8px;animation:shake .3s"><i class="ti ti-alert-triangle"></i> ${s.obstacleMsg}</div>` : ''}
         <div style="overflow-x:auto;padding-bottom:8px">${mazeHtml}</div>
         <div style="margin-top:10px;font-size:11px;color:var(--text3);text-align:center">
           Usá las flechas ← ↑ → ↓ del teclado · Llegá hasta 🏁
@@ -918,6 +920,8 @@ function loadMaze() {
   s.reachedEnd = false;
   s.timerLeft = 25;
   s.selectedAns = null;
+  s.obstacleMsg = null;
+  s.frozen = false;
   s.screen = 'maze';
   clearInterval(s.timerIv);
   s.timerIv = setInterval(()=>{
@@ -935,6 +939,7 @@ function focusMaze() {
   // Keyboard listener
   document.onkeydown = function(e) {
     if(cuentasState.screen!=='maze') return;
+    if(cuentasState.frozen) return;
     const moves = {ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};
     const d = moves[e.key];
     if(!d) return;
@@ -945,6 +950,34 @@ function focusMaze() {
     const {grid,W,H} = cuentasState.mazeData;
     if(nr<0||nr>=H||nc<0||nc>=W) return;
     if(grid[nr][nc]===1) return; // wall
+    if(grid[nr][nc]===2) {
+      // obstacle! show message and freeze 2 seconds
+      const obsIdx = cuentasState.mazeData.obsPositions.findIndex(p=>p[0]===nr&&p[1]===nc);
+      const sit = SITUACIONES[cuentasState.situacion];
+      const obsName = sit.obstaculos[obsIdx] || 'Obstáculo';
+      const msgs = [
+        'scope_creep:¡Scope Creep! El cliente sumó más pedidos. Perdés 2 segundos.',
+        'pedido_urgente:¡Pedido Urgente! Todo para ayer. Perdés 2 segundos.',
+        'cliente_enojado:¡Cliente Enojado! Hay que calmar la situación. Perdés 2 segundos.',
+        'upsell_posible:¡Oportunidad de Upsell! Tomás nota y seguís. Perdés 2 segundos.',
+        'default:¡Obstáculo! Perdés 2 segundos.'
+      ];
+      const key = obsName.toLowerCase().replace(/\n/g,'_').replace(/ /g,'_');
+      const msg = msgs.find(m=>key.includes(m.split(':')[0].replace('_creep','').replace('_urgente','').replace('_enojado','').replace('_posible',''))) || msgs[4];
+      cuentasState.playerPos=[nr,nc];
+      cuentasState.obstacleMsg = msg.split(':')[1];
+      cuentasState.frozen = true;
+      renderCuentas();
+      setTimeout(()=>{
+        cuentasState.frozen = false;
+        cuentasState.obstacleMsg = null;
+        // remove obstacle so player can pass
+        cuentasState.mazeData.grid[nr][nc] = 0;
+        renderCuentas();
+      }, 2000);
+      return;
+    }
+    if(cuentasState.frozen) return;
     cuentasState.playerPos=[nr,nc];
     if(grid[nr][nc]===4) {
       // reached end
