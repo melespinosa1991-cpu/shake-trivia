@@ -12,7 +12,6 @@
   --green:#1D9E75;--green-dark:#0F6E56;--green-darker:#085041;--green-light:#E1F5EE;--green-mid:#9FE1CB;
   --blue:#378ADD;--blue-dark:#185FA5;--blue-darker:#0C447C;--blue-light:#E6F1FB;
   --red-light:#FCEBEB;--red-dark:#791F1F;--red-border:#A32D2D;
-  --amber:#BA7517;--amber-light:#FAEEDA;
   --bg:#f4f6f3;--surface:#fff;--surface2:#f1f3f0;
   --border:rgba(0,0,0,0.09);--border-md:rgba(0,0,0,0.16);
   --text:#1a1a1a;--text2:#555;--text3:#999;
@@ -20,7 +19,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 14px 48px}
-
 .app{width:100%;max-width:700px;background:var(--surface);border-radius:var(--rl);border:1px solid var(--border);overflow:hidden;box-shadow:0 4px 28px rgba(0,0,0,0.08)}
 
 /* HEADER */
@@ -38,6 +36,19 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
 /* PANELS */
 .panel{padding:16px;display:none}
 .panel.on{display:block}
+
+/* PASSWORD OVERLAY */
+.pw-overlay{padding:2rem 1.5rem;text-align:center}
+.pw-icon{font-size:40px;color:var(--green-mid);margin-bottom:12px}
+.pw-title{font-size:18px;font-weight:500;color:var(--text);margin-bottom:6px}
+.pw-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
+.pw-input-wrap{display:flex;gap:8px;max-width:320px;margin:0 auto 10px}
+.pw-input{flex:1;padding:10px 14px;border-radius:var(--r);border:1.5px solid var(--border-md);font-size:14px;font-family:var(--font);outline:none;transition:border .15s}
+.pw-input:focus{border-color:var(--green)}
+.pw-btn{padding:10px 18px;border-radius:var(--r);border:none;background:var(--green);color:#fff;font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer;transition:all .15s}
+.pw-btn:hover{background:var(--green-dark)}
+.pw-error{font-size:13px;color:var(--red-border);margin-top:4px;display:none}
+.pw-error.on{display:block}
 
 /* SECTION LABELS */
 .slbl{font-size:11px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:5px}
@@ -93,6 +104,14 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
 .hbtn.sel{transform:scale(1.04)}
 .hlabel{font-size:10px;font-weight:400;display:block;margin-top:2px;opacity:.75}
 
+/* HOST TIMER */
+.host-timer{display:flex;align-items:center;justify-content:space-between;background:var(--green);border-radius:var(--rl);padding:14px 18px;margin-bottom:14px}
+.htdisp{font-size:30px;font-weight:500;color:#fff;font-family:var(--mono);letter-spacing:3px}
+.htlbl{font-size:11px;color:var(--green-mid);letter-spacing:.5px;margin-bottom:2px}
+.hctrls{display:flex;gap:6px}
+.hctbtn{padding:6px 14px;border-radius:var(--r);border:1px solid rgba(255,255,255,.35);background:transparent;cursor:pointer;font-size:13px;color:#fff;font-family:var(--font);font-weight:500;transition:all .15s;display:flex;align-items:center;gap:5px}
+.hctbtn:hover{background:rgba(255,255,255,.2)}
+
 /* SCOREBOARD */
 .scoreboard{background:var(--surface2);border-radius:var(--rl);padding:14px;margin-bottom:14px;border:1px solid var(--border)}
 .sbtitle{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
@@ -104,13 +123,11 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
 .sbnum.g{color:var(--green-dark)}
 .sbnum.r{color:var(--red-border)}
 
-/* PARTICIPANT */
-.tbar{display:flex;align-items:center;justify-content:space-between;background:var(--green);border-radius:var(--rl);padding:14px 18px;margin-bottom:12px}
-.tlbl{font-size:11px;color:var(--green-mid);letter-spacing:.5px;margin-bottom:2px}
-.tdisp{font-size:30px;font-weight:500;color:#fff;font-family:var(--mono);letter-spacing:3px}
-.tctrls{display:flex;gap:6px}
-.tbtn{padding:6px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,.35);background:transparent;cursor:pointer;font-size:13px;color:#fff;font-family:var(--font);transition:all .15s}
-.tbtn:hover{background:rgba(255,255,255,.15)}
+/* PARTICIPANT TIMER */
+.tbar{background:var(--green);border-radius:var(--rl);padding:14px 18px;margin-bottom:12px;text-align:center}
+.tlbl{font-size:11px;color:var(--green-mid);letter-spacing:.5px;margin-bottom:4px}
+.tdisp{font-size:36px;font-weight:500;color:#fff;font-family:var(--mono);letter-spacing:4px}
+.tstatus{font-size:11px;color:var(--green-mid);margin-top:4px}
 
 .srow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .sc{background:var(--surface2);border-radius:var(--r);padding:10px;text-align:center}
@@ -135,7 +152,6 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
 .cno{background:var(--red-light);color:var(--red-dark)}
 .cwait{background:var(--surface2);color:var(--text2)}
 
-/* HOUSE SELECTOR (participant) */
 .hsel-wrap{background:var(--surface2);border-radius:var(--rl);padding:16px;margin-bottom:14px;border:1px solid var(--border)}
 .hsel-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px}
 .hsel-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -145,6 +161,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
 .hsel-btn.hh{background:#FAEEDA;border-color:#BA7517;color:#633806}
 .hsel-btn.ha{background:var(--green-light);border-color:var(--green-dark);color:var(--green-darker)}
 .hsel-btn.hk{background:var(--blue-light);border-color:var(--blue-dark);color:var(--blue-darker)}
+.hsel-btn.sel{transform:scale(1.04);font-weight:500}
 
 .wait{text-align:center;padding:2rem 1rem}
 .wico{font-size:36px;color:var(--green-mid);margin-bottom:12px}
@@ -160,7 +177,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
 .reset-btn{width:100%;padding:10px;border-radius:var(--r);border:1px solid var(--red-border);background:transparent;cursor:pointer;font-size:13px;color:var(--red-dark);font-family:var(--font);transition:all .15s;margin-top:10px}
 .reset-btn:hover{background:var(--red-light)}
 
-@media(max-width:480px){body{padding:10px 8px 32px}.qbtn{font-size:10px}.tdisp{font-size:22px}.houses,.hsel-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){body{padding:10px 8px 32px}.qbtn{font-size:10px}.htdisp,.tdisp{font-size:22px}.houses,.hsel-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -178,51 +195,72 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
     <button class="tab" onclick="switchView('participant')"><i class="ti ti-user"></i> Vista participante</button>
   </div>
 
-  <!-- HOST -->
+  <!-- HOST PANEL -->
   <div class="panel on" id="host-panel">
 
-    <div style="margin-bottom:14px">
-      <div class="slbl" style="margin-bottom:8px;font-size:12px;color:var(--text2)"><i class="ti ti-home" style="font-size:14px"></i> Seleccioná la House que juega</div>
-      <div class="houses" id="host-houses"></div>
-    </div>
-
-    <div class="slbl fl" style="margin-top:4px"><i class="ti ti-coin" style="font-size:14px"></i> Finance</div>
-    <div class="qgrid" id="finance-grid"></div>
-    <div class="slbl pl"><i class="ti ti-users" style="font-size:14px"></i> People</div>
-    <div class="qgrid" id="people-grid"></div>
-
-    <div class="card" id="host-card">
-      <div class="wait" style="padding:1.5rem">
-        <div class="wico"><i class="ti ti-cards"></i></div>
-        <div class="wtitle">Seleccioná una pregunta para comenzar</div>
+    <!-- PASSWORD OVERLAY -->
+    <div id="pw-overlay" class="pw-overlay">
+      <div class="wico"><i class="ti ti-lock"></i></div>
+      <div class="pw-title">Acceso restringido</div>
+      <div class="pw-sub">Ingresá la clave del host para continuar</div>
+      <div class="pw-input-wrap">
+        <input class="pw-input" type="password" id="pw-input" placeholder="Clave del host" onkeydown="if(event.key==='Enter')checkPw()">
+        <button class="pw-btn" onclick="checkPw()">Entrar</button>
       </div>
+      <div class="pw-error" id="pw-error">Clave incorrecta, intentá de nuevo.</div>
     </div>
 
-    <div class="navrow" style="margin-bottom:12px">
-      <button class="nbtn" onclick="hostNav(-1)" id="prev-btn" disabled><i class="ti ti-arrow-left"></i> Anterior</button>
-      <button class="nbtn" onclick="hostNav(1)" id="next-btn" disabled>Siguiente <i class="ti ti-arrow-right"></i></button>
-    </div>
+    <!-- HOST CONTENT (hidden until password ok) -->
+    <div id="host-content" style="display:none">
+      <div class="host-timer">
+        <div>
+          <div class="htlbl"><i class="ti ti-clock" style="font-size:13px;vertical-align:-2px"></i> tiempo del juego</div>
+          <div class="htdisp" id="host-timer-display">00:00</div>
+        </div>
+        <div class="hctrls">
+          <button class="hctbtn" onclick="hostStartTimer()"><i class="ti ti-player-play"></i> Iniciar</button>
+          <button class="hctbtn" onclick="hostPauseTimer()"><i class="ti ti-player-pause"></i> Pausar</button>
+          <button class="hctbtn" onclick="hostResetTimer()"><i class="ti ti-refresh"></i> Reset</button>
+        </div>
+      </div>
 
-    <div class="scoreboard" id="scoreboard" style="display:none">
-      <div class="sbtitle"><i class="ti ti-chart-bar" style="font-size:13px;vertical-align:-2px"></i> Puntaje por House</div>
-      <div id="sb-rows"></div>
-    </div>
+      <div style="margin-bottom:14px">
+        <div class="slbl" style="margin-bottom:8px;font-size:12px;color:var(--text2)"><i class="ti ti-home" style="font-size:14px"></i> House que juega</div>
+        <div class="houses" id="host-houses"></div>
+      </div>
 
-    <button class="reset-btn" onclick="resetGame()"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px"></i> Reiniciar juego completo</button>
+      <div class="slbl fl" style="margin-top:4px"><i class="ti ti-coin" style="font-size:14px"></i> Finance</div>
+      <div class="qgrid" id="finance-grid"></div>
+      <div class="slbl pl"><i class="ti ti-users" style="font-size:14px"></i> People</div>
+      <div class="qgrid" id="people-grid"></div>
+
+      <div class="card" id="host-card">
+        <div class="wait" style="padding:1.5rem">
+          <div class="wico"><i class="ti ti-cards"></i></div>
+          <div class="wtitle">Seleccioná una pregunta para comenzar</div>
+        </div>
+      </div>
+
+      <div class="navrow" style="margin-bottom:12px">
+        <button class="nbtn" onclick="hostNav(-1)" id="prev-btn" disabled><i class="ti ti-arrow-left"></i> Anterior</button>
+        <button class="nbtn" onclick="hostNav(1)" id="next-btn" disabled>Siguiente <i class="ti ti-arrow-right"></i></button>
+      </div>
+
+      <div class="scoreboard" id="scoreboard" style="display:none">
+        <div class="sbtitle"><i class="ti ti-chart-bar" style="font-size:13px;vertical-align:-2px"></i> Puntaje por House</div>
+        <div id="sb-rows"></div>
+      </div>
+
+      <button class="reset-btn" onclick="resetGame()"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px"></i> Reiniciar juego completo</button>
+    </div>
   </div>
 
-  <!-- PARTICIPANT -->
+  <!-- PARTICIPANT PANEL -->
   <div class="panel" id="participant-panel">
     <div class="tbar">
-      <div>
-        <div class="tlbl"><i class="ti ti-clock" style="font-size:13px;vertical-align:-2px"></i> tiempo total</div>
-        <div class="tdisp" id="timer-display">00:00</div>
-      </div>
-      <div class="tctrls">
-        <button class="tbtn" onclick="startTimer()"><i class="ti ti-player-play"></i></button>
-        <button class="tbtn" onclick="pauseTimer()"><i class="ti ti-player-pause"></i></button>
-        <button class="tbtn" onclick="resetTimer()"><i class="ti ti-refresh"></i></button>
-      </div>
+      <div class="tlbl"><i class="ti ti-clock" style="font-size:13px;vertical-align:-2px"></i> tiempo del juego</div>
+      <div class="tdisp" id="p-timer-display">00:00</div>
+      <div class="tstatus" id="p-timer-status">El host controla el tiempo</div>
     </div>
 
     <div class="hsel-wrap" id="house-selector">
@@ -247,6 +285,8 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+const HOST_PASSWORD = "House.E.26";
+
 const firebaseConfig = {
   apiKey: "AIzaSyCj8qxmeUu2PhLzC1ZP7Y5M0Sr1PUZoEPk",
   authDomain: "shake-trivia-47606.firebaseapp.com",
@@ -261,6 +301,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const gameRef = ref(db, 'game');
 const scoresRef = ref(db, 'scores');
+const timerRef = ref(db, 'timer');
 
 const QQ = [
   {area:'Finance',num:1,title:'El mito del presupuesto',text:'Cuando un equipo le pide presupuesto a Finance para una nueva herramienta o proyecto y la respuesta es un "no", ¿cuál suele ser la razón real?',opts:['Que Finance busca recortar costos al máximo para aumentar artificialmente la ganancia del mes.','Que el área de People sugirió postergar ese gasto para priorizar actividades de clima.','Que el gasto no está alineado a la planificación estratégica o no se demostró su retorno (ROI).'],correct:2,teaching:'Finance no cuida la plata prohibiendo gastar, sino asegurando que cada inversión genere valor. No es un "no" caprichoso; es un "mostrame cómo esto ayuda al crecimiento de Shake".'},
@@ -281,115 +322,176 @@ const HOUSES = [
   {id:'A',label:'House A',cls:'ha'},
   {id:'K',label:'House K',cls:'hk'}
 ];
-
 const L = ['A','B','C'];
-let cur = -1, revealed = {}, gameState = {};
-let pHouse = null, pAns = {}, pOk = 0, pNo = 0;
-let timerSec = 0, timerOn = false, timerIv = null;
-let hostHouse = null;
-let scores = {};
 
-// ---------- FIREBASE LISTENER ----------
+let cur=-1, revealed={}, hostHouse=null, scores={};
+let pHouse=null, pAns={}, pOk=0, pNo=0;
+let hostUnlocked = false;
+
+// ---- TIMER state (synced via Firebase) ----
+let timerSec=0, timerRunning=false, timerIv=null;
+let localTimerIv=null; // participant-side interpolation
+
+// ======== PASSWORD ========
+window.checkPw = function() {
+  const val = document.getElementById('pw-input').value;
+  if (val === HOST_PASSWORD) {
+    hostUnlocked = true;
+    document.getElementById('pw-overlay').style.display = 'none';
+    document.getElementById('host-content').style.display = 'block';
+  } else {
+    document.getElementById('pw-error').classList.add('on');
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+};
+
+// ======== FIREBASE LISTENERS ========
 onValue(gameRef, snap => {
-  gameState = snap.val() || {};
-  cur = gameState.currentQ !== undefined ? gameState.currentQ : -1;
-  revealed = gameState.revealed || {};
-  hostHouse = gameState.activeHouse || null;
-  buildGrids();
-  renderHostCard();
+  const g = snap.val() || {};
+  cur = g.currentQ !== undefined ? g.currentQ : -1;
+  revealed = g.revealed || {};
+  hostHouse = g.activeHouse || null;
+  if (hostUnlocked) {
+    buildGrids();
+    renderHostCard();
+    buildHostHouses();
+    document.getElementById('prev-btn').disabled = cur <= 0;
+    document.getElementById('next-btn').disabled = cur < 0 || cur >= QQ.length-1;
+  }
   renderParticipant();
-  document.getElementById('prev-btn').disabled = cur <= 0;
-  document.getElementById('next-btn').disabled = cur < 0 || cur >= QQ.length-1;
 });
 
 onValue(scoresRef, snap => {
   scores = snap.val() || {};
-  renderScoreboard();
+  if (hostUnlocked) renderScoreboard();
 });
 
-// ---------- HOST ----------
+onValue(timerRef, snap => {
+  const t = snap.val() || {};
+  timerSec = t.seconds || 0;
+  timerRunning = t.running || false;
+
+  // update host display
+  if (hostUnlocked) {
+    updateHostTimerDisplay();
+    if (timerRunning && !timerIv) {
+      timerIv = setInterval(() => { timerSec++; updateHostTimerDisplay(); }, 1000);
+    } else if (!timerRunning && timerIv) {
+      clearInterval(timerIv); timerIv = null;
+    }
+  }
+
+  // update participant display
+  clearInterval(localTimerIv); localTimerIv = null;
+  updatePTimerDisplay();
+  document.getElementById('p-timer-status').textContent = timerRunning ? 'Corriendo...' : 'En pausa';
+  if (timerRunning) {
+    localTimerIv = setInterval(() => { timerSec++; updatePTimerDisplay(); }, 1000);
+  }
+});
+
+// ======== HOST TIMER ========
+window.hostStartTimer = function() {
+  update(timerRef, {running: true, seconds: timerSec});
+};
+window.hostPauseTimer = function() {
+  update(timerRef, {running: false, seconds: timerSec});
+};
+window.hostResetTimer = function() {
+  timerSec = 0;
+  clearInterval(timerIv); timerIv = null;
+  set(timerRef, {running: false, seconds: 0});
+};
+
+function updateHostTimerDisplay() {
+  const m=Math.floor(timerSec/60),s=timerSec%60;
+  const el=document.getElementById('host-timer-display');
+  if(el) el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function updatePTimerDisplay() {
+  const m=Math.floor(timerSec/60),s=timerSec%60;
+  const el=document.getElementById('p-timer-display');
+  if(el) el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+// ======== HOST HOUSES ========
 function buildHostHouses() {
-  const el = document.getElementById('host-houses');
-  el.innerHTML = '';
-  HOUSES.forEach(h => {
-    const b = document.createElement('button');
-    b.className = 'hbtn ' + h.cls + (hostHouse===h.id?' sel':'');
-    b.innerHTML = h.label + `<span class="hlabel">${hostHouse===h.id?'jugando':'seleccionar'}</span>`;
-    b.onclick = () => {
-      hostHouse = h.id;
-      update(gameRef, {activeHouse: h.id});
-      buildHostHouses();
-    };
+  const el=document.getElementById('host-houses');
+  if(!el) return;
+  el.innerHTML='';
+  HOUSES.forEach(h=>{
+    const b=document.createElement('button');
+    b.className='hbtn '+h.cls+(hostHouse===h.id?' sel':'');
+    b.innerHTML=h.label+`<span class="hlabel">${hostHouse===h.id?'jugando':'seleccionar'}</span>`;
+    b.onclick=()=>{ update(gameRef,{activeHouse:h.id}); };
     el.appendChild(b);
   });
 }
 
+// ======== HOST GRID ========
 function buildGrids() {
-  buildHostHouses();
-  ['finance-grid','people-grid'].forEach((id,gi) => {
-    const el = document.getElementById(id);
-    el.innerHTML = '';
-    QQ.filter((_,i) => gi===0 ? i<5 : i>=5).forEach((q,li) => {
-      const i = gi===0 ? li : li+5;
-      const btn = document.createElement('button');
-      btn.className = 'qbtn ' + (q.area==='Finance'?'fb':'pb') + (cur===i?' aq':'') + (revealed[i]?' done':'');
-      btn.innerHTML = `<span class="qn">${q.area==='Finance'?'F':'P'}${li+1}</span>${q.title.split(' ').slice(0,2).join(' ')}`;
-      btn.onclick = () => selectQ(i);
+  ['finance-grid','people-grid'].forEach((id,gi)=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.innerHTML='';
+    QQ.filter((_,i)=>gi===0?i<5:i>=5).forEach((q,li)=>{
+      const i=gi===0?li:li+5;
+      const btn=document.createElement('button');
+      btn.className='qbtn '+(q.area==='Finance'?'fb':'pb')+(cur===i?' aq':'')+(revealed[i]?' done':'');
+      btn.innerHTML=`<span class="qn">${q.area==='Finance'?'F':'P'}${li+1}</span>${q.title.split(' ').slice(0,2).join(' ')}`;
+      btn.onclick=()=>update(gameRef,{currentQ:i});
       el.appendChild(btn);
     });
   });
 }
 
-window.selectQ = function(idx) {
-  update(gameRef, {currentQ: idx});
-};
-
 function renderHostCard() {
-  if (cur < 0) return;
-  const q = QQ[cur], rv = revealed[cur];
-  const optsHtml = q.opts.map((o,i) =>
-    `<div class="opt ${rv&&i===q.correct?'ok':''}">
+  if(cur<0)return;
+  const q=QQ[cur],rv=revealed[cur];
+  const optsHtml=q.opts.map((o,i)=>`
+    <div class="opt ${rv&&i===q.correct?'ok':''}">
       ${rv&&i===q.correct?'<i class="ti ti-check" style="color:var(--green-dark);flex-shrink:0"></i>':''}
       <span class="ol">${L[i]}</span><span>${o}</span>
     </div>`).join('');
-  document.getElementById('host-card').innerHTML = `
+  document.getElementById('host-card').innerHTML=`
     <span class="pill ${q.area==='Finance'?'fpill':'ppill'}">${q.area}</span>
-    <div class="qmeta">Pregunta ${q.num} de 10 ${hostHouse?'&nbsp;·&nbsp; <strong>'+HOUSES.find(h=>h.id===hostHouse)?.label+'</strong>':''}</div>
+    <div class="qmeta">Pregunta ${q.num} de 10${hostHouse?' &nbsp;·&nbsp; <strong>'+HOUSES.find(h=>h.id===hostHouse)?.label+'</strong>':''}</div>
     <div class="qtitle">${q.title}</div>
     <div class="qbody">${q.text}</div>
     <div class="opts">${optsHtml}</div>
     <button class="rbtn" onclick="doReveal()" ${rv?'disabled':''}>
       ${rv?'<i class="ti ti-check"></i> Respuesta revelada':'<i class="ti ti-eye"></i> Revelar respuesta correcta'}
     </button>
-    <div class="teach ${rv?'on':''}" id="tbox"><strong>Enseñanza Shake:</strong> ${q.teaching}</div>
-  `;
+    <div class="teach ${rv?'on':''}" id="tbox"><strong>Enseñanza Shake:</strong> ${q.teaching}</div>`;
 }
 
 window.doReveal = function() {
-  if (cur < 0) return;
-  const upd = {};
-  upd['revealed/'+cur] = true;
-  update(gameRef, upd);
+  if(cur<0)return;
+  const upd={};
+  upd['revealed/'+cur]=true;
+  update(gameRef,upd);
 };
 
 window.hostNav = function(d) {
-  const n = cur + d;
-  if (n >= 0 && n < QQ.length) update(gameRef, {currentQ: n});
+  const n=cur+d;
+  if(n>=0&&n<QQ.length) update(gameRef,{currentQ:n});
 };
 
 function renderScoreboard() {
-  const sb = document.getElementById('scoreboard');
-  const rows = document.getElementById('sb-rows');
-  const hasData = Object.keys(scores).length > 0;
-  sb.style.display = hasData ? 'block' : 'none';
-  if (!hasData) return;
-  const sorted = HOUSES.map(h => ({
+  const sb=document.getElementById('scoreboard');
+  const rows=document.getElementById('sb-rows');
+  if(!sb||!rows)return;
+  const hasData=Object.keys(scores).length>0;
+  sb.style.display=hasData?'block':'none';
+  if(!hasData)return;
+  const sorted=HOUSES.map(h=>({
     ...h,
-    ok: scores[h.id]?.correct || 0,
-    no: scores[h.id]?.wrong || 0,
-    time: scores[h.id]?.time || '--'
-  })).sort((a,b) => b.ok - a.ok || a.no - b.no);
-  rows.innerHTML = sorted.map((h,i) => `
+    ok:scores[h.id]?.correct||0,
+    no:scores[h.id]?.wrong||0,
+    time:scores[h.id]?.time||'--'
+  })).sort((a,b)=>b.ok-a.ok||a.no-b.no);
+  rows.innerHTML=sorted.map((h,i)=>`
     <div class="sbrow">
       <div class="sbhouse">${i===0?'🥇 ':''}${h.label}</div>
       <div class="sbinfo">
@@ -401,80 +503,84 @@ function renderScoreboard() {
 }
 
 window.resetGame = function() {
-  if (!confirm('¿Segura que querés reiniciar el juego completo? Se borran todos los puntajes.')) return;
-  set(gameRef, {currentQ: -1, revealed: {}, activeHouse: null});
-  set(scoresRef, {});
+  if(!confirm('¿Segura que querés reiniciar el juego completo? Se borran todos los puntajes.'))return;
+  set(gameRef,{currentQ:-1,revealed:{},activeHouse:null});
+  set(scoresRef,{});
+  set(timerRef,{running:false,seconds:0});
 };
 
-// ---------- PARTICIPANT ----------
+// ======== PARTICIPANT ========
 function buildPHouseGrid() {
-  const el = document.getElementById('p-house-grid');
-  el.innerHTML = '';
-  HOUSES.forEach(h => {
-    const b = document.createElement('button');
-    b.className = 'hsel-btn ' + h.cls + (pHouse===h.id?' sel':'');
-    b.textContent = h.label;
-    b.onclick = () => {
-      pHouse = h.id;
-      buildPHouseGrid();
-      renderParticipant();
-    };
+  const el=document.getElementById('p-house-grid');
+  if(!el)return;
+  el.innerHTML='';
+  HOUSES.forEach(h=>{
+    const b=document.createElement('button');
+    b.className='hsel-btn '+h.cls+(pHouse===h.id?' sel':'');
+    b.textContent=h.label;
+    b.onclick=()=>{ pHouse=h.id; buildPHouseGrid(); renderParticipant(); };
     el.appendChild(b);
   });
 }
 
 function renderParticipant() {
   buildPHouseGrid();
-  const cont = document.getElementById('participant-content');
-  const ans = Object.keys(pAns).length;
-  document.getElementById('p-fill').style.width = Math.round(ans/10*100)+'%';
-  document.getElementById('p-txt').textContent = ans+' / 10';
-  document.getElementById('sc-ok').textContent = pOk;
-  document.getElementById('sc-no').textContent = pNo;
-  document.getElementById('sc-rem').textContent = 10-ans;
+  const cont=document.getElementById('participant-content');
+  if(!cont)return;
+  const ans=Object.keys(pAns).length;
+  const pfill=document.getElementById('p-fill');
+  const ptxt=document.getElementById('p-txt');
+  if(pfill) pfill.style.width=Math.round(ans/10*100)+'%';
+  if(ptxt) ptxt.textContent=ans+' / 10';
+  const scok=document.getElementById('sc-ok');
+  const scno=document.getElementById('sc-no');
+  const screm=document.getElementById('sc-rem');
+  if(scok) scok.textContent=pOk;
+  if(scno) scno.textContent=pNo;
+  if(screm) screm.textContent=10-ans;
 
-  if (!pHouse) {
-    cont.innerHTML = `<div class="wait"><div class="wico"><i class="ti ti-home"></i></div><div class="wtitle">Elegí tu House para comenzar</div></div>`;
+  if(!pHouse){
+    cont.innerHTML=`<div class="wait"><div class="wico"><i class="ti ti-home"></i></div><div class="wtitle">Elegí tu House para comenzar</div></div>`;
     return;
   }
-  if (cur < 0) {
-    cont.innerHTML = `<div class="wait"><div class="wico"><i class="ti ti-hourglass"></i></div><div class="wtitle">Esperando al host...</div><div class="wsub">El juego arranca cuando el host seleccione la primera pregunta</div></div>`;
+  if(cur<0){
+    cont.innerHTML=`<div class="wait"><div class="wico"><i class="ti ti-hourglass"></i></div><div class="wtitle">Esperando al host...</div><div class="wsub">El juego arranca cuando el host seleccione la primera pregunta</div></div>`;
     return;
   }
-  if (ans === 10 && Object.keys(revealed).length >= 10) {
+  if(ans===10&&Object.keys(revealed).length>=10){
     saveScore();
-    cont.innerHTML = `
+    cont.innerHTML=`
       <div class="fin">
         <div class="fico"><i class="ti ti-trophy"></i></div>
-        <div class="ftitle">¡Trivia terminada! &nbsp; ${HOUSES.find(h=>h.id===pHouse)?.label}</div>
+        <div class="ftitle">¡Trivia terminada! &nbsp;${HOUSES.find(h=>h.id===pHouse)?.label}</div>
         <div class="fscore">${pOk} / 10</div>
         <div class="fsub">${pOk>=8?'¡Excelente trabajo en Shake!':pOk>=5?'¡Buen resultado!':'Seguimos aprendiendo juntos.'}</div>
       </div>`;
     return;
   }
 
-  const q = QQ[cur], rv = revealed[cur], my = pAns[cur];
-  const optsHtml = q.opts.map((o,i) => {
-    let cls = 'popt';
-    if (rv) { if(i===q.correct) cls+=' cr'; else if(my===i) cls+=' wr'; }
-    else if (my===i) cls += ' sel';
+  const q=QQ[cur],rv=revealed[cur],my=pAns[cur];
+  const optsHtml=q.opts.map((o,i)=>{
+    let cls='popt';
+    if(rv){if(i===q.correct)cls+=' cr';else if(my===i)cls+=' wr';}
+    else if(my===i)cls+=' sel';
     return `<button class="${cls}" onclick="pickAns(${i})" ${rv?'disabled':''}><span class="ol">${L[i]}</span><span>${o}</span></button>`;
   }).join('');
 
-  let statusHtml = '';
-  if (rv && my!==undefined) {
-    statusHtml = my===q.correct
-      ? `<div class="chip cok"><i class="ti ti-check"></i> ¡Correcto!</div>`
-      : `<div class="chip cno"><i class="ti ti-x"></i> Incorrecto. La respuesta era ${L[q.correct]}.</div>`;
-  } else if (rv) {
-    statusHtml = `<div class="chip cno"><i class="ti ti-x"></i> No respondiste esta pregunta.</div>`;
-  } else if (my!==undefined) {
-    statusHtml = `<div class="chip cwait"><i class="ti ti-clock"></i> Esperando que el host revele la respuesta...</div>`;
+  let statusHtml='';
+  if(rv&&my!==undefined){
+    statusHtml=my===q.correct
+      ?`<div class="chip cok"><i class="ti ti-check"></i> ¡Correcto!</div>`
+      :`<div class="chip cno"><i class="ti ti-x"></i> Incorrecto. La respuesta era ${L[q.correct]}.</div>`;
+  }else if(rv){
+    statusHtml=`<div class="chip cno"><i class="ti ti-x"></i> No respondiste esta pregunta.</div>`;
+  }else if(my!==undefined){
+    statusHtml=`<div class="chip cwait"><i class="ti ti-clock"></i> Esperando que el host revele la respuesta...</div>`;
   }
 
-  const teachHtml = rv ? `<div class="teach on" style="margin-top:12px"><strong>Enseñanza Shake:</strong> ${q.teaching}</div>` : '';
+  const teachHtml=rv?`<div class="teach on" style="margin-top:12px"><strong>Enseñanza Shake:</strong> ${q.teaching}</div>`:'';
 
-  cont.innerHTML = `
+  cont.innerHTML=`
     <div class="card">
       <span class="pill ${q.area==='Finance'?'fpill':'ppill'}">${q.area}</span>
       <div class="qmeta">Pregunta ${q.num} de 10</div>
@@ -487,37 +593,24 @@ function renderParticipant() {
 }
 
 window.pickAns = function(i) {
-  if (revealed[cur] || !pHouse) return;
-  const was = pAns[cur] !== undefined;
-  pAns[cur] = i;
-  if (!was) { if(i===QQ[cur].correct) pOk++; else pNo++; }
+  if(revealed[cur]||!pHouse)return;
+  const was=pAns[cur]!==undefined;
+  pAns[cur]=i;
+  if(!was){if(i===QQ[cur].correct)pOk++;else pNo++;}
   renderParticipant();
 };
 
 function saveScore() {
-  if (!pHouse) return;
-  const m = Math.floor(timerSec/60), s = timerSec%60;
-  const timeStr = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-  const existing = scores[pHouse] || {correct:0,wrong:0};
-  update(scoresRef, {
-    [pHouse]: {
-      correct: Math.max(existing.correct, pOk),
-      wrong: Math.min(existing.wrong || pNo, pNo),
-      time: timeStr
-    }
-  });
-}
-
-// ---------- TIMER ----------
-window.startTimer = function() { if(timerOn)return; timerOn=true; timerIv=setInterval(()=>{timerSec++;upTimer();},1000); };
-window.pauseTimer = function() { timerOn=false; clearInterval(timerIv); };
-window.resetTimer = function() { pauseTimer(); timerSec=0; upTimer(); };
-function upTimer() {
+  if(!pHouse)return;
   const m=Math.floor(timerSec/60),s=timerSec%60;
-  document.getElementById('timer-display').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  const timeStr=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  const existing=scores[pHouse]||{correct:0,wrong:99};
+  if(pOk>=(existing.correct||0)){
+    update(scoresRef,{[pHouse]:{correct:pOk,wrong:pNo,time:timeStr}});
+  }
 }
 
-// ---------- VIEW SWITCH ----------
+// ======== VIEW SWITCH ========
 window.switchView = function(v) {
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',(v==='host'&&i===0)||(v==='participant'&&i===1)));
   document.getElementById('host-panel').classList.toggle('on',v==='host');
