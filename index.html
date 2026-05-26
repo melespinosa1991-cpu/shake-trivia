@@ -5,338 +5,267 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Shake Trivia — Interconectados</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
-  :root {
-    --green: #1D9E75;
-    --green-dark: #0F6E56;
-    --green-darker: #085041;
-    --green-light: #E1F5EE;
-    --green-mid: #9FE1CB;
-    --blue: #378ADD;
-    --blue-dark: #185FA5;
-    --blue-darker: #0C447C;
-    --blue-light: #E6F1FB;
-    --red-light: #FCEBEB;
-    --red-dark: #791F1F;
-    --red-border: #A32D2D;
-    --bg: #f7f8f6;
-    --surface: #ffffff;
-    --surface2: #f2f4f1;
-    --border: rgba(0,0,0,0.1);
-    --border-md: rgba(0,0,0,0.18);
-    --text: #1a1a1a;
-    --text2: #555;
-    --text3: #999;
-    --radius: 10px;
-    --radius-lg: 14px;
-    --font: 'DM Sans', sans-serif;
-    --mono: 'DM Mono', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 16px 48px;
-  }
+:root {
+  --green:#1D9E75;--green-dark:#0F6E56;--green-darker:#085041;--green-light:#E1F5EE;--green-mid:#9FE1CB;
+  --blue:#378ADD;--blue-dark:#185FA5;--blue-darker:#0C447C;--blue-light:#E6F1FB;
+  --red-light:#FCEBEB;--red-dark:#791F1F;--red-border:#A32D2D;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --bg:#f4f6f3;--surface:#fff;--surface2:#f1f3f0;
+  --border:rgba(0,0,0,0.09);--border-md:rgba(0,0,0,0.16);
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --r:10px;--rl:14px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 14px 48px}
 
-  .app {
-    width: 100%;
-    max-width: 680px;
-    background: var(--surface);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
-    overflow: hidden;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-  }
+.app{width:100%;max-width:700px;background:var(--surface);border-radius:var(--rl);border:1px solid var(--border);overflow:hidden;box-shadow:0 4px 28px rgba(0,0,0,0.08)}
 
-  /* HEADER */
-  .shake-header {
-    background: var(--green);
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .shake-logo { font-size: 22px; font-weight: 500; color: #fff; letter-spacing: -0.5px; }
-  .shake-logo span { color: var(--green-mid); }
-  .shake-subtitle { font-size: 11px; color: var(--green-mid); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
-  .header-icon { font-size: 22px; color: var(--green-mid); }
+/* HEADER */
+.hdr{background:var(--green);padding:15px 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:22px;font-weight:500;color:#fff;letter-spacing:-0.5px}
+.logo span{color:var(--green-mid)}
+.sub{font-size:11px;color:var(--green-mid);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
 
-  /* TABS */
-  .view-toggle {
-    display: flex;
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-  }
-  .toggle-btn {
-    flex: 1; padding: 11px; border: none; background: transparent;
-    cursor: pointer; font-size: 13px; color: var(--text2); font-family: var(--font);
-    letter-spacing: 0.3px; transition: all 0.15s; border-bottom: 2px solid transparent;
-  }
-  .toggle-btn.active {
-    color: var(--green-dark); border-bottom: 2px solid var(--green);
-    background: var(--surface); font-weight: 500;
-  }
-  .toggle-btn i { font-size: 14px; vertical-align: -2px; margin-right: 4px; }
+/* TABS */
+.tabs{display:flex;background:var(--surface2);border-bottom:1px solid var(--border)}
+.tab{flex:1;padding:11px;border:none;background:transparent;cursor:pointer;font-size:13px;color:var(--text2);font-family:var(--font);transition:all .15s;border-bottom:2px solid transparent}
+.tab.on{color:var(--green-dark);border-bottom:2px solid var(--green);background:var(--surface);font-weight:500}
+.tab i{font-size:14px;vertical-align:-2px;margin-right:4px}
 
-  /* VIEWS */
-  .host-view, .participant-view { padding: 16px; display: none; }
-  .host-view.visible, .participant-view.visible { display: block; }
+/* PANELS */
+.panel{padding:16px;display:none}
+.panel.on{display:block}
 
-  /* SECTION LABELS */
-  .section-label {
-    font-size: 11px; font-weight: 500; letter-spacing: 0.8px;
-    text-transform: uppercase; margin-bottom: 7px;
-    display: flex; align-items: center; gap: 5px;
-  }
-  .finance-label { color: var(--blue-dark); }
-  .people-label { color: var(--green-dark); }
+/* SECTION LABELS */
+.slbl{font-size:11px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.fl{color:var(--blue-dark)}.pl{color:var(--green-dark)}
 
-  /* Q GRID */
-  .q-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; margin-bottom: 14px; }
-  .q-btn {
-    padding: 8px 4px; border-radius: var(--radius);
-    border: 1px solid var(--border); background: var(--surface);
-    cursor: pointer; font-size: 11px; font-family: var(--font);
-    text-align: center; transition: all 0.15s; color: var(--text2); line-height: 1.3;
-  }
-  .q-btn:hover { background: var(--surface2); }
-  .q-btn.finance-btn { border-top: 3px solid var(--blue); border-radius: 0 0 var(--radius) var(--radius); }
-  .q-btn.people-btn { border-top: 3px solid var(--green); border-radius: 0 0 var(--radius) var(--radius); }
-  .q-btn.active-q.finance-btn { border: 2px solid var(--blue-dark); border-top: 3px solid var(--blue); background: var(--blue-light); color: var(--blue-darker); }
-  .q-btn.active-q.people-btn { border: 2px solid var(--green-dark); border-top: 3px solid var(--green); background: var(--green-light); color: var(--green-darker); }
-  .q-btn.answered { opacity: 0.38; }
-  .q-num { font-size: 14px; font-weight: 500; display: block; margin-bottom: 2px; }
+/* Q GRID */
+.qgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
+.qbtn{padding:8px 4px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:11px;font-family:var(--font);text-align:center;transition:all .15s;color:var(--text2);line-height:1.3}
+.qbtn:hover{background:var(--surface2)}
+.qbtn.fb{border-top:3px solid var(--blue);border-radius:0 0 var(--r) var(--r)}
+.qbtn.pb{border-top:3px solid var(--green);border-radius:0 0 var(--r) var(--r)}
+.qbtn.aq.fb{border:2px solid var(--blue-dark);border-top:3px solid var(--blue);background:var(--blue-light);color:var(--blue-darker)}
+.qbtn.aq.pb{border:2px solid var(--green-dark);border-top:3px solid var(--green);background:var(--green-light);color:var(--green-darker)}
+.qbtn.done{opacity:.35}
+.qn{font-size:14px;font-weight:500;display:block;margin-bottom:2px}
 
-  /* HOST CARD */
-  .host-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 20px; margin: 12px 0;
-  }
-  .area-pill {
-    display: inline-block; font-size: 11px; padding: 3px 10px;
-    border-radius: 20px; font-weight: 500; margin-bottom: 10px;
-  }
-  .finance-pill { background: var(--blue-light); color: var(--blue-darker); }
-  .people-pill { background: var(--green-light); color: var(--green-darker); }
-  .q-meta { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
-  .q-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
-  .q-body { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 16px; }
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;margin:12px 0}
+.pill{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;margin-bottom:10px}
+.fpill{background:var(--blue-light);color:var(--blue-darker)}
+.ppill{background:var(--green-light);color:var(--green-darker)}
+.qmeta{font-size:11px;color:var(--text3);margin-bottom:8px}
+.qtitle{font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px}
+.qbody{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px}
 
-  .options-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
-  .opt-row {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 10px 12px; border-radius: var(--radius);
-    border: 1px solid var(--border); font-size: 13px; color: var(--text); line-height: 1.45;
-  }
-  .opt-row.correct-ans { background: var(--green-light); border-color: var(--green-dark); color: var(--green-darker); }
-  .opt-letter { font-weight: 500; min-width: 16px; flex-shrink: 0; }
+.opts{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:var(--r);border:1px solid var(--border);font-size:13px;color:var(--text);line-height:1.45}
+.opt.ok{background:var(--green-light);border-color:var(--green-dark);color:var(--green-darker)}
+.ol{font-weight:500;min-width:16px;flex-shrink:0}
 
-  .reveal-btn {
-    width: 100%; padding: 10px; border-radius: var(--radius);
-    border: 1.5px solid var(--green); background: transparent;
-    cursor: pointer; font-size: 13px; color: var(--green-dark);
-    font-family: var(--font); font-weight: 500; transition: all 0.15s; margin-bottom: 10px;
-  }
-  .reveal-btn:hover { background: var(--green-light); }
-  .reveal-btn:disabled { border-color: var(--border); color: var(--text3); cursor: not-allowed; background: transparent; }
+.rbtn{width:100%;padding:10px;border-radius:var(--r);border:1.5px solid var(--green);background:transparent;cursor:pointer;font-size:13px;color:var(--green-dark);font-family:var(--font);font-weight:500;transition:all .15s;margin-bottom:10px}
+.rbtn:hover{background:var(--green-light)}
+.rbtn:disabled{border-color:var(--border);color:var(--text3);cursor:not-allowed}
 
-  .teaching-box {
-    background: var(--green-light); border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 12px 14px; font-size: 13px; color: var(--green-darker);
-    line-height: 1.6; display: none; border-left: 3px solid var(--green);
-  }
-  .teaching-box.visible { display: block; }
-  .teaching-box strong { color: #04342C; }
+.teach{background:var(--green-light);border-radius:0 var(--r) var(--r) 0;padding:12px 14px;font-size:13px;color:var(--green-darker);line-height:1.6;display:none;border-left:3px solid var(--green)}
+.teach.on{display:block}
+.teach strong{color:#04342C}
 
-  .nav-row { display: flex; gap: 8px; }
-  .nav-btn {
-    flex: 1; padding: 10px; border-radius: var(--radius);
-    border: 1px solid var(--border-md); background: transparent;
-    cursor: pointer; font-size: 13px; color: var(--text);
-    font-family: var(--font); transition: all 0.15s;
-  }
-  .nav-btn:hover { background: var(--surface2); }
-  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-  .nav-btn i { font-size: 14px; vertical-align: -2px; }
+.navrow{display:flex;gap:8px}
+.nbtn{flex:1;padding:9px;border-radius:var(--r);border:1px solid var(--border-md);background:transparent;cursor:pointer;font-size:13px;color:var(--text);font-family:var(--font);transition:all .15s}
+.nbtn:hover{background:var(--surface2)}
+.nbtn:disabled{opacity:.3;cursor:not-allowed}
+.nbtn i{font-size:14px;vertical-align:-2px}
 
-  /* PARTICIPANT */
-  .timer-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--green); border-radius: var(--radius-lg);
-    padding: 14px 18px; margin-bottom: 12px;
-  }
-  .timer-lbl { font-size: 11px; color: var(--green-mid); letter-spacing: 0.5px; margin-bottom: 2px; }
-  .timer-lbl i { font-size: 13px; vertical-align: -2px; margin-right: 3px; }
-  .timer-display { font-size: 30px; font-weight: 500; color: #fff; font-family: var(--mono); letter-spacing: 3px; }
-  .t-btn {
-    padding: 6px 12px; border-radius: var(--radius);
-    border: 1px solid rgba(255,255,255,0.35); background: transparent;
-    cursor: pointer; font-size: 13px; color: #fff; font-family: var(--font);
-    transition: all 0.15s;
-  }
-  .t-btn:hover { background: rgba(255,255,255,0.15); }
-  .t-controls { display: flex; gap: 6px; }
+/* HOUSES */
+.houses{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.hbtn{padding:10px 6px;border-radius:var(--r);border:1.5px solid var(--border-md);background:var(--surface);cursor:pointer;font-size:13px;font-family:var(--font);font-weight:500;text-align:center;transition:all .15s;color:var(--text2)}
+.hbtn:hover{background:var(--surface2)}
+.hbtn.hs{background:#EEEDFE;border-color:#534AB7;color:#3C3489}
+.hbtn.hh{background:#FAEEDA;border-color:#BA7517;color:#633806}
+.hbtn.ha{background:var(--green-light);border-color:var(--green-dark);color:var(--green-darker)}
+.hbtn.hk{background:var(--blue-light);border-color:var(--blue-dark);color:var(--blue-darker)}
+.hbtn.sel{transform:scale(1.04)}
+.hlabel{font-size:10px;font-weight:400;display:block;margin-top:2px;opacity:.75}
 
-  .score-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
-  .score-card { background: var(--surface2); border-radius: var(--radius); padding: 10px; text-align: center; }
-  .score-num { font-size: 24px; font-weight: 500; color: var(--text); }
-  .score-num.green { color: var(--green-dark); }
-  .score-num.red { color: var(--red-border); }
-  .score-lbl { font-size: 11px; color: var(--text3); }
+/* SCOREBOARD */
+.scoreboard{background:var(--surface2);border-radius:var(--rl);padding:14px;margin-bottom:14px;border:1px solid var(--border)}
+.sbtitle{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.sbrow{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:var(--r);background:var(--surface);margin-bottom:6px;border:1px solid var(--border)}
+.sbrow:last-child{margin-bottom:0}
+.sbhouse{font-size:13px;font-weight:500;color:var(--text)}
+.sbinfo{display:flex;gap:16px;font-size:12px;color:var(--text2)}
+.sbnum{font-weight:500}
+.sbnum.g{color:var(--green-dark)}
+.sbnum.r{color:var(--red-border)}
 
-  .progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .progress-bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.4s; }
-  .progress-txt { font-size: 12px; color: var(--text3); white-space: nowrap; }
+/* PARTICIPANT */
+.tbar{display:flex;align-items:center;justify-content:space-between;background:var(--green);border-radius:var(--rl);padding:14px 18px;margin-bottom:12px}
+.tlbl{font-size:11px;color:var(--green-mid);letter-spacing:.5px;margin-bottom:2px}
+.tdisp{font-size:30px;font-weight:500;color:#fff;font-family:var(--mono);letter-spacing:3px}
+.tctrls{display:flex;gap:6px}
+.tbtn{padding:6px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,.35);background:transparent;cursor:pointer;font-size:13px;color:#fff;font-family:var(--font);transition:all .15s}
+.tbtn:hover{background:rgba(255,255,255,.15)}
 
-  .p-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 20px; margin-bottom: 10px;
-  }
-  .p-options { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; }
-  .p-opt {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 12px; border-radius: var(--radius); border: 1px solid var(--border);
-    cursor: pointer; font-size: 13px; color: var(--text); line-height: 1.45;
-    transition: all 0.15s; background: var(--surface); font-family: var(--font);
-    text-align: left; width: 100%;
-  }
-  .p-opt:hover:not(:disabled) { background: var(--surface2); border-color: var(--border-md); }
-  .p-opt.selected { border: 1.5px solid var(--blue-dark); background: var(--blue-light); color: var(--blue-darker); }
-  .p-opt.correct-reveal { background: var(--green-light); border: 1.5px solid var(--green-dark); color: var(--green-darker); }
-  .p-opt.wrong-reveal { background: var(--red-light); border: 1.5px solid var(--red-border); color: var(--red-dark); }
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.sc{background:var(--surface2);border-radius:var(--r);padding:10px;text-align:center}
+.sn{font-size:24px;font-weight:500;color:var(--text)}
+.sn.g{color:var(--green-dark)}.sn.r{color:var(--red-border)}
+.sl{font-size:11px;color:var(--text3)}
 
-  .status-chip {
-    display: flex; align-items: center; gap: 7px;
-    padding: 9px 12px; border-radius: var(--radius);
-    font-size: 13px; margin-top: 10px;
-  }
-  .chip-ok { background: var(--green-light); color: var(--green-darker); }
-  .chip-no { background: var(--red-light); color: var(--red-dark); }
-  .chip-wait { background: var(--surface2); color: var(--text2); }
+.prow{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.pbar{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.pfill{height:100%;background:var(--green);border-radius:3px;transition:width .4s}
+.ptxt{font-size:12px;color:var(--text3);white-space:nowrap}
 
-  .wait-screen { text-align: center; padding: 2.5rem 1rem; }
-  .wait-icon { font-size: 36px; color: var(--green-mid); margin-bottom: 12px; }
-  .wait-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-  .wait-sub { font-size: 13px; color: var(--text3); }
+.popts{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.popt{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:var(--r);border:1px solid var(--border);cursor:pointer;font-size:13px;color:var(--text);line-height:1.45;transition:all .15s;background:var(--surface);font-family:var(--font);text-align:left;width:100%}
+.popt:hover:not(:disabled){background:var(--surface2)}
+.popt.sel{border:1.5px solid var(--blue-dark);background:var(--blue-light);color:var(--blue-darker)}
+.popt.cr{background:var(--green-light);border:1.5px solid var(--green-dark);color:var(--green-darker)}
+.popt.wr{background:var(--red-light);border:1.5px solid var(--red-border);color:var(--red-dark)}
 
-  /* FINISHED */
-  .finished-screen {
-    text-align: center; padding: 2.5rem 1rem;
-    background: var(--green-light); border-radius: var(--radius-lg); margin-bottom: 10px;
-  }
-  .finished-icon { font-size: 40px; color: var(--green); margin-bottom: 10px; }
-  .finished-title { font-size: 20px; font-weight: 500; color: var(--green-darker); margin-bottom: 6px; }
-  .finished-sub { font-size: 14px; color: var(--green-dark); }
-  .finished-score { font-size: 36px; font-weight: 500; color: var(--green-darker); margin: 12px 0 4px; }
+.chip{display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:var(--r);font-size:13px;margin-top:10px}
+.cok{background:var(--green-light);color:var(--green-darker)}
+.cno{background:var(--red-light);color:var(--red-dark)}
+.cwait{background:var(--surface2);color:var(--text2)}
 
-  @media (max-width: 480px) {
-    body { padding: 12px 8px 32px; }
-    .q-btn { font-size: 10px; }
-    .timer-display { font-size: 24px; }
-  }
+/* HOUSE SELECTOR (participant) */
+.hsel-wrap{background:var(--surface2);border-radius:var(--rl);padding:16px;margin-bottom:14px;border:1px solid var(--border)}
+.hsel-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px}
+.hsel-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.hsel-btn{padding:12px 6px;border-radius:var(--r);border:1.5px solid var(--border-md);background:var(--surface);cursor:pointer;font-size:13px;font-family:var(--font);font-weight:500;text-align:center;transition:all .15s;color:var(--text2)}
+.hsel-btn:hover{background:var(--surface2)}
+.hsel-btn.hs{background:#EEEDFE;border-color:#534AB7;color:#3C3489}
+.hsel-btn.hh{background:#FAEEDA;border-color:#BA7517;color:#633806}
+.hsel-btn.ha{background:var(--green-light);border-color:var(--green-dark);color:var(--green-darker)}
+.hsel-btn.hk{background:var(--blue-light);border-color:var(--blue-dark);color:var(--blue-darker)}
+
+.wait{text-align:center;padding:2rem 1rem}
+.wico{font-size:36px;color:var(--green-mid);margin-bottom:12px}
+.wtitle{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px}
+.wsub{font-size:13px;color:var(--text3)}
+
+.fin{text-align:center;padding:2rem 1rem;background:var(--green-light);border-radius:var(--rl);margin-bottom:10px}
+.fico{font-size:40px;color:var(--green);margin-bottom:10px}
+.ftitle{font-size:20px;font-weight:500;color:var(--green-darker);margin-bottom:6px}
+.fscore{font-size:40px;font-weight:500;color:var(--green-darker);margin:12px 0 4px}
+.fsub{font-size:14px;color:var(--green-dark)}
+
+.reset-btn{width:100%;padding:10px;border-radius:var(--r);border:1px solid var(--red-border);background:transparent;cursor:pointer;font-size:13px;color:var(--red-dark);font-family:var(--font);transition:all .15s;margin-top:10px}
+.reset-btn:hover{background:var(--red-light)}
+
+@media(max-width:480px){body{padding:10px 8px 32px}.qbtn{font-size:10px}.tdisp{font-size:22px}.houses,.hsel-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-
 <div class="app">
-  <div class="shake-header">
+  <div class="hdr">
     <div>
-      <div class="shake-logo">shake<span>.</span>trivia</div>
-      <div class="shake-subtitle">Interconectados &nbsp;·&nbsp; Finance & People</div>
+      <div class="logo">shake<span>.</span>trivia</div>
+      <div class="sub">Interconectados &nbsp;·&nbsp; Finance & People</div>
     </div>
-    <i class="ti ti-trophy header-icon" aria-hidden="true"></i>
+    <i class="ti ti-trophy" style="font-size:22px;color:var(--green-mid)"></i>
   </div>
 
-  <div class="view-toggle">
-    <button class="toggle-btn active" onclick="switchView('host')">
-      <i class="ti ti-settings"></i> Vista host
-    </button>
-    <button class="toggle-btn" onclick="switchView('participant')">
-      <i class="ti ti-user"></i> Vista participante
-    </button>
+  <div class="tabs">
+    <button class="tab on" onclick="switchView('host')"><i class="ti ti-settings"></i> Vista host</button>
+    <button class="tab" onclick="switchView('participant')"><i class="ti ti-user"></i> Vista participante</button>
   </div>
 
-  <!-- HOST VIEW -->
-  <div class="host-view visible" id="host-view">
-    <div class="section-label finance-label" style="margin-top:4px">
-      <i class="ti ti-coin" style="font-size:14px"></i> Finance
-    </div>
-    <div class="q-grid" id="finance-grid"></div>
-    <div class="section-label people-label">
-      <i class="ti ti-users" style="font-size:14px"></i> People
-    </div>
-    <div class="q-grid" id="people-grid"></div>
+  <!-- HOST -->
+  <div class="panel on" id="host-panel">
 
-    <div class="host-card" id="host-card">
-      <div class="wait-screen" style="padding:1.5rem">
-        <div class="wait-icon"><i class="ti ti-cards"></i></div>
-        <div class="wait-title">Seleccioná una pregunta para comenzar</div>
+    <div style="margin-bottom:14px">
+      <div class="slbl" style="margin-bottom:8px;font-size:12px;color:var(--text2)"><i class="ti ti-home" style="font-size:14px"></i> Seleccioná la House que juega</div>
+      <div class="houses" id="host-houses"></div>
+    </div>
+
+    <div class="slbl fl" style="margin-top:4px"><i class="ti ti-coin" style="font-size:14px"></i> Finance</div>
+    <div class="qgrid" id="finance-grid"></div>
+    <div class="slbl pl"><i class="ti ti-users" style="font-size:14px"></i> People</div>
+    <div class="qgrid" id="people-grid"></div>
+
+    <div class="card" id="host-card">
+      <div class="wait" style="padding:1.5rem">
+        <div class="wico"><i class="ti ti-cards"></i></div>
+        <div class="wtitle">Seleccioná una pregunta para comenzar</div>
       </div>
     </div>
 
-    <div class="nav-row">
-      <button class="nav-btn" onclick="hostNav(-1)" id="prev-btn" disabled>
-        <i class="ti ti-arrow-left"></i> Anterior
-      </button>
-      <button class="nav-btn" onclick="hostNav(1)" id="next-btn" disabled>
-        Siguiente <i class="ti ti-arrow-right"></i>
-      </button>
+    <div class="navrow" style="margin-bottom:12px">
+      <button class="nbtn" onclick="hostNav(-1)" id="prev-btn" disabled><i class="ti ti-arrow-left"></i> Anterior</button>
+      <button class="nbtn" onclick="hostNav(1)" id="next-btn" disabled>Siguiente <i class="ti ti-arrow-right"></i></button>
     </div>
+
+    <div class="scoreboard" id="scoreboard" style="display:none">
+      <div class="sbtitle"><i class="ti ti-chart-bar" style="font-size:13px;vertical-align:-2px"></i> Puntaje por House</div>
+      <div id="sb-rows"></div>
+    </div>
+
+    <button class="reset-btn" onclick="resetGame()"><i class="ti ti-refresh" style="font-size:14px;vertical-align:-2px"></i> Reiniciar juego completo</button>
   </div>
 
-  <!-- PARTICIPANT VIEW -->
-  <div class="participant-view" id="participant-view">
-    <div class="timer-bar">
+  <!-- PARTICIPANT -->
+  <div class="panel" id="participant-panel">
+    <div class="tbar">
       <div>
-        <div class="timer-lbl"><i class="ti ti-clock"></i> tiempo total</div>
-        <div class="timer-display" id="timer-display">00:00</div>
+        <div class="tlbl"><i class="ti ti-clock" style="font-size:13px;vertical-align:-2px"></i> tiempo total</div>
+        <div class="tdisp" id="timer-display">00:00</div>
       </div>
-      <div class="t-controls">
-        <button class="t-btn" onclick="startTimer()" title="Iniciar"><i class="ti ti-player-play"></i></button>
-        <button class="t-btn" onclick="pauseTimer()" title="Pausar"><i class="ti ti-player-pause"></i></button>
-        <button class="t-btn" onclick="resetTimer()" title="Reiniciar"><i class="ti ti-refresh"></i></button>
-      </div>
-    </div>
-
-    <div class="score-row">
-      <div class="score-card">
-        <div class="score-num green" id="sc-ok">0</div>
-        <div class="score-lbl">Correctas</div>
-      </div>
-      <div class="score-card">
-        <div class="score-num red" id="sc-no">0</div>
-        <div class="score-lbl">Incorrectas</div>
-      </div>
-      <div class="score-card">
-        <div class="score-num" id="sc-rem">10</div>
-        <div class="score-lbl">Restantes</div>
+      <div class="tctrls">
+        <button class="tbtn" onclick="startTimer()"><i class="ti ti-player-play"></i></button>
+        <button class="tbtn" onclick="pauseTimer()"><i class="ti ti-player-pause"></i></button>
+        <button class="tbtn" onclick="resetTimer()"><i class="ti ti-refresh"></i></button>
       </div>
     </div>
 
-    <div class="progress-row">
-      <div class="progress-bar">
-        <div class="progress-fill" id="p-fill" style="width:0%"></div>
-      </div>
-      <span class="progress-txt" id="p-txt">0 / 10</span>
+    <div class="hsel-wrap" id="house-selector">
+      <div class="hsel-title"><i class="ti ti-home" style="font-size:14px;vertical-align:-2px"></i> ¿A qué House pertenecés?</div>
+      <div class="hsel-grid" id="p-house-grid"></div>
     </div>
 
+    <div class="srow">
+      <div class="sc"><div class="sn g" id="sc-ok">0</div><div class="sl">Correctas</div></div>
+      <div class="sc"><div class="sn r" id="sc-no">0</div><div class="sl">Incorrectas</div></div>
+      <div class="sc"><div class="sn" id="sc-rem">10</div><div class="sl">Restantes</div></div>
+    </div>
+    <div class="prow">
+      <div class="pbar"><div class="pfill" id="p-fill" style="width:0%"></div></div>
+      <span class="ptxt" id="p-txt">0 / 10</span>
+    </div>
     <div id="participant-content"></div>
   </div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCj8qxmeUu2PhLzC1ZP7Y5M0Sr1PUZoEPk",
+  authDomain: "shake-trivia-47606.firebaseapp.com",
+  databaseURL: "https://shake-trivia-47606-default-rtdb.firebaseio.com",
+  projectId: "shake-trivia-47606",
+  storageBucket: "shake-trivia-47606.firebasestorage.app",
+  messagingSenderId: "804506036765",
+  appId: "1:804506036765:web:9586fcf523cd68cec9f4f4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const gameRef = ref(db, 'game');
+const scoresRef = ref(db, 'scores');
+
 const QQ = [
   {area:'Finance',num:1,title:'El mito del presupuesto',text:'Cuando un equipo le pide presupuesto a Finance para una nueva herramienta o proyecto y la respuesta es un "no", ¿cuál suele ser la razón real?',opts:['Que Finance busca recortar costos al máximo para aumentar artificialmente la ganancia del mes.','Que el área de People sugirió postergar ese gasto para priorizar actividades de clima.','Que el gasto no está alineado a la planificación estratégica o no se demostró su retorno (ROI).'],correct:2,teaching:'Finance no cuida la plata prohibiendo gastar, sino asegurando que cada inversión genere valor. No es un "no" caprichoso; es un "mostrame cómo esto ayuda al crecimiento de Shake".'},
   {area:'Finance',num:2,title:'Cobranzas vs. Ventas',text:'¿Por qué un retraso en las cobranzas afecta a toda la empresa aunque el equipo de ventas haya roto récords de contratos cerrados?',opts:['Porque las ventas no cobradas se borran de la contabilidad al mes siguiente.','Porque impacta directamente en la liquidez (disponibilidad real de dinero) para operar.','Porque obliga al equipo de Finance a rehacer los reportes financieros desde cero.'],correct:1,teaching:'Vender es solo la mitad del camino; la salud de la empresa depende de la caja. Sin efectivo real (liquidez), no se pueden pagar sueldos ni proveedores, por más ventas que existan.'},
-  {area:'Finance',num:3,title:'El dolor de las fechas límite',text:'¿Por qué Finance es tan estricto con las fechas de entrega de rendiciones de gastos o facturas (ej. "los 25 de cada mes")?',opts:['Porque los sistemas contables se bloquean y borran la información si no se carga a tiempo.','Porque los cierres contables y las presentaciones ante entes como AFIP tienen fechas legales improrrogables.','Porque necesitan congelar las cuentas para que los reportes salgan siempre con números redondos.'],correct:1,teaching:'El orden de Finance no es burocracia; es protección. Una rendición tarde puede colgar un cierre mensual, distorsionar los reportes de los directores o generar multas impositivas innecesarias para la empresa.'},
+  {area:'Finance',num:3,title:'El dolor de las fechas límite',text:'¿Por qué Finance es tan estricto con las fechas de entrega de rendiciones de gastos o facturas?',opts:['Porque los sistemas contables se bloquean y borran la información si no se carga a tiempo.','Porque los cierres contables y las presentaciones ante entes como AFIP tienen fechas legales improrrogables.','Porque necesitan congelar las cuentas para que los reportes salgan siempre con números redondos.'],correct:1,teaching:'El orden de Finance no es burocracia; es protección. Una rendición tarde puede colgar un cierre mensual, distorsionar los reportes de los directores o generar multas impositivas innecesarias para la empresa.'},
   {area:'Finance',num:4,title:'Facturación en pausa',text:'¿Por qué Finance puede frenar la emisión de una factura aunque el trabajo para el cliente ya esté 100% terminado?',opts:['Porque necesita validar información administrativa, fiscal y contractual antes de emitirla.','Porque el sistema de facturación se bloquea automáticamente al cierre de cada mes.','Porque espera que el cliente envíe primero su orden de compra aprobada por su banco.'],correct:0,teaching:'Facturar rápido es clave, pero facturar mal cuesta el doble de tiempo. Finance cuida que el contrato, los datos fiscales y los montos sean perfectos para evitar notas de crédito o rechazos del cliente.'},
   {area:'Finance',num:5,title:'El misterio del IVA',text:'Todos los servicios de Shake incluyen IVA. Para la empresa, ese dinero:',opts:['Forma parte de la ganancia neta del mes hasta que se transfiere.','Se registra como un pasivo / impuesto a entregar al Estado.','Se puede usar libremente para cubrir cualquier gasto operativo urgente.'],correct:1,teaching:'El IVA nunca es de la empresa; somos solo recaudadores. Entra a la cuenta bancaria, pero se registra como una deuda con el Estado hasta que llega el momento de pagarlo.'},
   {area:'People',num:6,title:'¿Qué es la Cultura?',text:'Cuando People trabaja sobre la cultura de la empresa, ¿qué busca principalmente?',opts:['Diseñar el paquete de beneficios, los snacks de la oficina y los eventos de fin de año.','Alinear y facilitar la forma en que las personas trabajan, deciden y se relacionan.','Asegurar que todos los equipos piensen exactamente de la misma manera para evitar conflictos.'],correct:1,teaching:'La cultura no son los días libres ni los festejos; son nuestros valores en acción. People busca que compartamos una misma forma de hacer las cosas, potenciando la diversidad de ideas.'},
@@ -346,73 +275,156 @@ const QQ = [
   {area:'People',num:10,title:'Protagonistas del Desarrollo',text:'Si una persona quiere mejorar una habilidad o crecer en su puesto en Shake, ¿cómo se gestiona habitualmente con People?',opts:['People tiene la obligación de buscar, pagar y agendar un curso específico para esa persona.','Se co-diseña un plan donde People facilita recursos, pero la persona es protagonista de su propio aprendizaje.','Se espera congelado a la evaluación de desempeño anual para ver si el líder autoriza a hacer algo.'],correct:1,teaching:'El desarrollo es una calle de doble mano. People y los líderes abren puertas y disponibilizan herramientas, pero el motor principal del crecimiento es el interés y la proactividad de cada uno.'}
 ];
 
-const L = ['A','B','C'];
-let cur = -1, revealed = {}, pAns = {}, pOk = 0, pNo = 0;
-let timerSec = 0, timerOn = false, timerIv = null;
+const HOUSES = [
+  {id:'S',label:'House S',cls:'hs'},
+  {id:'H',label:'House H',cls:'hh'},
+  {id:'A',label:'House A',cls:'ha'},
+  {id:'K',label:'House K',cls:'hk'}
+];
 
-function switchView(v) {
-  document.querySelectorAll('.toggle-btn').forEach((b,i) => b.classList.toggle('active',(v==='host'&&i===0)||(v==='participant'&&i===1)));
-  document.getElementById('host-view').classList.toggle('visible', v==='host');
-  document.getElementById('participant-view').classList.toggle('visible', v==='participant');
-  if (v==='participant') renderParticipant();
+const L = ['A','B','C'];
+let cur = -1, revealed = {}, gameState = {};
+let pHouse = null, pAns = {}, pOk = 0, pNo = 0;
+let timerSec = 0, timerOn = false, timerIv = null;
+let hostHouse = null;
+let scores = {};
+
+// ---------- FIREBASE LISTENER ----------
+onValue(gameRef, snap => {
+  gameState = snap.val() || {};
+  cur = gameState.currentQ !== undefined ? gameState.currentQ : -1;
+  revealed = gameState.revealed || {};
+  hostHouse = gameState.activeHouse || null;
+  buildGrids();
+  renderHostCard();
+  renderParticipant();
+  document.getElementById('prev-btn').disabled = cur <= 0;
+  document.getElementById('next-btn').disabled = cur < 0 || cur >= QQ.length-1;
+});
+
+onValue(scoresRef, snap => {
+  scores = snap.val() || {};
+  renderScoreboard();
+});
+
+// ---------- HOST ----------
+function buildHostHouses() {
+  const el = document.getElementById('host-houses');
+  el.innerHTML = '';
+  HOUSES.forEach(h => {
+    const b = document.createElement('button');
+    b.className = 'hbtn ' + h.cls + (hostHouse===h.id?' sel':'');
+    b.innerHTML = h.label + `<span class="hlabel">${hostHouse===h.id?'jugando':'seleccionar'}</span>`;
+    b.onclick = () => {
+      hostHouse = h.id;
+      update(gameRef, {activeHouse: h.id});
+      buildHostHouses();
+    };
+    el.appendChild(b);
+  });
 }
 
 function buildGrids() {
+  buildHostHouses();
   ['finance-grid','people-grid'].forEach((id,gi) => {
     const el = document.getElementById(id);
     el.innerHTML = '';
     QQ.filter((_,i) => gi===0 ? i<5 : i>=5).forEach((q,li) => {
       const i = gi===0 ? li : li+5;
       const btn = document.createElement('button');
-      btn.className = 'q-btn ' + (q.area==='Finance'?'finance-btn':'people-btn') + (cur===i?' active-q':'') + (revealed[i]?' answered':'');
-      btn.innerHTML = `<span class="q-num">${q.area==='Finance'?'F':'P'}${li+1}</span>${q.title.split(' ').slice(0,2).join(' ')}`;
+      btn.className = 'qbtn ' + (q.area==='Finance'?'fb':'pb') + (cur===i?' aq':'') + (revealed[i]?' done':'');
+      btn.innerHTML = `<span class="qn">${q.area==='Finance'?'F':'P'}${li+1}</span>${q.title.split(' ').slice(0,2).join(' ')}`;
       btn.onclick = () => selectQ(i);
       el.appendChild(btn);
     });
   });
 }
 
-function selectQ(idx) {
-  cur = idx;
-  buildGrids();
-  renderHost();
-  document.getElementById('prev-btn').disabled = idx <= 0;
-  document.getElementById('next-btn').disabled = idx >= QQ.length-1;
-}
+window.selectQ = function(idx) {
+  update(gameRef, {currentQ: idx});
+};
 
-function renderHost() {
+function renderHostCard() {
   if (cur < 0) return;
   const q = QQ[cur], rv = revealed[cur];
   const optsHtml = q.opts.map((o,i) =>
-    `<div class="opt-row ${rv&&i===q.correct?'correct-ans':''}">
+    `<div class="opt ${rv&&i===q.correct?'ok':''}">
       ${rv&&i===q.correct?'<i class="ti ti-check" style="color:var(--green-dark);flex-shrink:0"></i>':''}
-      <span class="opt-letter">${L[i]}</span><span>${o}</span>
-    </div>`
-  ).join('');
+      <span class="ol">${L[i]}</span><span>${o}</span>
+    </div>`).join('');
   document.getElementById('host-card').innerHTML = `
-    <span class="area-pill ${q.area==='Finance'?'finance-pill':'people-pill'}">${q.area}</span>
-    <div class="q-meta">Pregunta ${q.num} de 10</div>
-    <div class="q-title">${q.title}</div>
-    <div class="q-body">${q.text}</div>
-    <div class="options-list">${optsHtml}</div>
-    <button class="reveal-btn" onclick="doReveal()" ${rv?'disabled':''}>
+    <span class="pill ${q.area==='Finance'?'fpill':'ppill'}">${q.area}</span>
+    <div class="qmeta">Pregunta ${q.num} de 10 ${hostHouse?'&nbsp;·&nbsp; <strong>'+HOUSES.find(h=>h.id===hostHouse)?.label+'</strong>':''}</div>
+    <div class="qtitle">${q.title}</div>
+    <div class="qbody">${q.text}</div>
+    <div class="opts">${optsHtml}</div>
+    <button class="rbtn" onclick="doReveal()" ${rv?'disabled':''}>
       ${rv?'<i class="ti ti-check"></i> Respuesta revelada':'<i class="ti ti-eye"></i> Revelar respuesta correcta'}
     </button>
-    <div class="teaching-box ${rv?'visible':''}" id="tbox">
-      <strong>Enseñanza Shake:</strong> ${q.teaching}
-    </div>
+    <div class="teach ${rv?'on':''}" id="tbox"><strong>Enseñanza Shake:</strong> ${q.teaching}</div>
   `;
 }
 
-function doReveal() {
+window.doReveal = function() {
   if (cur < 0) return;
-  revealed[cur] = true;
-  renderHost(); buildGrids(); renderParticipant();
+  const upd = {};
+  upd['revealed/'+cur] = true;
+  update(gameRef, upd);
+};
+
+window.hostNav = function(d) {
+  const n = cur + d;
+  if (n >= 0 && n < QQ.length) update(gameRef, {currentQ: n});
+};
+
+function renderScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  const rows = document.getElementById('sb-rows');
+  const hasData = Object.keys(scores).length > 0;
+  sb.style.display = hasData ? 'block' : 'none';
+  if (!hasData) return;
+  const sorted = HOUSES.map(h => ({
+    ...h,
+    ok: scores[h.id]?.correct || 0,
+    no: scores[h.id]?.wrong || 0,
+    time: scores[h.id]?.time || '--'
+  })).sort((a,b) => b.ok - a.ok || a.no - b.no);
+  rows.innerHTML = sorted.map((h,i) => `
+    <div class="sbrow">
+      <div class="sbhouse">${i===0?'🥇 ':''}${h.label}</div>
+      <div class="sbinfo">
+        <span><span class="sbnum g">${h.ok}</span> correctas</span>
+        <span><span class="sbnum r">${h.no}</span> incorrectas</span>
+        <span>⏱ ${h.time}</span>
+      </div>
+    </div>`).join('');
 }
 
-function hostNav(d) { const n=cur+d; if(n>=0&&n<QQ.length) selectQ(n); }
+window.resetGame = function() {
+  if (!confirm('¿Segura que querés reiniciar el juego completo? Se borran todos los puntajes.')) return;
+  set(gameRef, {currentQ: -1, revealed: {}, activeHouse: null});
+  set(scoresRef, {});
+};
+
+// ---------- PARTICIPANT ----------
+function buildPHouseGrid() {
+  const el = document.getElementById('p-house-grid');
+  el.innerHTML = '';
+  HOUSES.forEach(h => {
+    const b = document.createElement('button');
+    b.className = 'hsel-btn ' + h.cls + (pHouse===h.id?' sel':'');
+    b.textContent = h.label;
+    b.onclick = () => {
+      pHouse = h.id;
+      buildPHouseGrid();
+      renderParticipant();
+    };
+    el.appendChild(b);
+  });
+}
 
 function renderParticipant() {
+  buildPHouseGrid();
   const cont = document.getElementById('participant-content');
   const ans = Object.keys(pAns).length;
   document.getElementById('p-fill').style.width = Math.round(ans/10*100)+'%';
@@ -421,77 +433,99 @@ function renderParticipant() {
   document.getElementById('sc-no').textContent = pNo;
   document.getElementById('sc-rem').textContent = 10-ans;
 
-  if (ans === 10 && Object.keys(revealed).length === 10) {
-    cont.innerHTML = `
-      <div class="finished-screen">
-        <div class="finished-icon"><i class="ti ti-trophy"></i></div>
-        <div class="finished-title">¡Trivia terminada!</div>
-        <div class="finished-score">${pOk} / 10</div>
-        <div class="finished-sub">${pOk>=8?'¡Excelente trabajo en Shake!':pOk>=5?'¡Buen resultado!':'Seguimos aprendiendo juntos.'}</div>
-      </div>`;
+  if (!pHouse) {
+    cont.innerHTML = `<div class="wait"><div class="wico"><i class="ti ti-home"></i></div><div class="wtitle">Elegí tu House para comenzar</div></div>`;
     return;
   }
-
   if (cur < 0) {
-    cont.innerHTML = `<div class="wait-screen">
-      <div class="wait-icon"><i class="ti ti-hourglass"></i></div>
-      <div class="wait-title">Esperando al host...</div>
-      <div class="wait-sub">El juego arranca cuando el host seleccione la primera pregunta</div>
-    </div>`;
+    cont.innerHTML = `<div class="wait"><div class="wico"><i class="ti ti-hourglass"></i></div><div class="wtitle">Esperando al host...</div><div class="wsub">El juego arranca cuando el host seleccione la primera pregunta</div></div>`;
+    return;
+  }
+  if (ans === 10 && Object.keys(revealed).length >= 10) {
+    saveScore();
+    cont.innerHTML = `
+      <div class="fin">
+        <div class="fico"><i class="ti ti-trophy"></i></div>
+        <div class="ftitle">¡Trivia terminada! &nbsp; ${HOUSES.find(h=>h.id===pHouse)?.label}</div>
+        <div class="fscore">${pOk} / 10</div>
+        <div class="fsub">${pOk>=8?'¡Excelente trabajo en Shake!':pOk>=5?'¡Buen resultado!':'Seguimos aprendiendo juntos.'}</div>
+      </div>`;
     return;
   }
 
   const q = QQ[cur], rv = revealed[cur], my = pAns[cur];
   const optsHtml = q.opts.map((o,i) => {
-    let cls = 'p-opt';
-    if (rv) { if(i===q.correct) cls+=' correct-reveal'; else if(my===i) cls+=' wrong-reveal'; }
-    else if (my===i) cls += ' selected';
-    return `<button class="${cls}" onclick="pickAns(${i})" ${rv?'disabled':''}><span class="opt-letter">${L[i]}</span><span>${o}</span></button>`;
+    let cls = 'popt';
+    if (rv) { if(i===q.correct) cls+=' cr'; else if(my===i) cls+=' wr'; }
+    else if (my===i) cls += ' sel';
+    return `<button class="${cls}" onclick="pickAns(${i})" ${rv?'disabled':''}><span class="ol">${L[i]}</span><span>${o}</span></button>`;
   }).join('');
 
   let statusHtml = '';
   if (rv && my!==undefined) {
     statusHtml = my===q.correct
-      ? `<div class="status-chip chip-ok"><i class="ti ti-check"></i> ¡Correcto!</div>`
-      : `<div class="status-chip chip-no"><i class="ti ti-x"></i> Incorrecto. La respuesta era ${L[q.correct]}.</div>`;
+      ? `<div class="chip cok"><i class="ti ti-check"></i> ¡Correcto!</div>`
+      : `<div class="chip cno"><i class="ti ti-x"></i> Incorrecto. La respuesta era ${L[q.correct]}.</div>`;
   } else if (rv) {
-    statusHtml = `<div class="status-chip chip-no"><i class="ti ti-x"></i> No respondiste esta pregunta.</div>`;
+    statusHtml = `<div class="chip cno"><i class="ti ti-x"></i> No respondiste esta pregunta.</div>`;
   } else if (my!==undefined) {
-    statusHtml = `<div class="status-chip chip-wait"><i class="ti ti-clock"></i> Esperando que el host revele la respuesta...</div>`;
+    statusHtml = `<div class="chip cwait"><i class="ti ti-clock"></i> Esperando que el host revele la respuesta...</div>`;
   }
 
-  const teachHtml = rv ? `<div class="teaching-box visible" style="margin-top:12px"><strong>Enseñanza Shake:</strong> ${q.teaching}</div>` : '';
+  const teachHtml = rv ? `<div class="teach on" style="margin-top:12px"><strong>Enseñanza Shake:</strong> ${q.teaching}</div>` : '';
 
   cont.innerHTML = `
-    <div class="p-card">
-      <span class="area-pill ${q.area==='Finance'?'finance-pill':'people-pill'}">${q.area}</span>
-      <div class="q-meta">Pregunta ${q.num} de 10</div>
-      <div class="q-title">${q.title}</div>
-      <div class="q-body">${q.text}</div>
-      <div class="p-options">${optsHtml}</div>
+    <div class="card">
+      <span class="pill ${q.area==='Finance'?'fpill':'ppill'}">${q.area}</span>
+      <div class="qmeta">Pregunta ${q.num} de 10</div>
+      <div class="qtitle">${q.title}</div>
+      <div class="qbody">${q.text}</div>
+      <div class="popts">${optsHtml}</div>
       ${statusHtml}
       ${teachHtml}
     </div>`;
 }
 
-function pickAns(i) {
-  if (revealed[cur]) return;
+window.pickAns = function(i) {
+  if (revealed[cur] || !pHouse) return;
   const was = pAns[cur] !== undefined;
   pAns[cur] = i;
   if (!was) { if(i===QQ[cur].correct) pOk++; else pNo++; }
   renderParticipant();
+};
+
+function saveScore() {
+  if (!pHouse) return;
+  const m = Math.floor(timerSec/60), s = timerSec%60;
+  const timeStr = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  const existing = scores[pHouse] || {correct:0,wrong:0};
+  update(scoresRef, {
+    [pHouse]: {
+      correct: Math.max(existing.correct, pOk),
+      wrong: Math.min(existing.wrong || pNo, pNo),
+      time: timeStr
+    }
+  });
 }
 
-function startTimer() { if(timerOn)return; timerOn=true; timerIv=setInterval(()=>{timerSec++;upTimer();},1000); }
-function pauseTimer() { timerOn=false; clearInterval(timerIv); }
-function resetTimer() { pauseTimer(); timerSec=0; upTimer(); }
+// ---------- TIMER ----------
+window.startTimer = function() { if(timerOn)return; timerOn=true; timerIv=setInterval(()=>{timerSec++;upTimer();},1000); };
+window.pauseTimer = function() { timerOn=false; clearInterval(timerIv); };
+window.resetTimer = function() { pauseTimer(); timerSec=0; upTimer(); };
 function upTimer() {
   const m=Math.floor(timerSec/60),s=timerSec%60;
   document.getElementById('timer-display').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
 
-buildGrids();
-renderParticipant();
+// ---------- VIEW SWITCH ----------
+window.switchView = function(v) {
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',(v==='host'&&i===0)||(v==='participant'&&i===1)));
+  document.getElementById('host-panel').classList.toggle('on',v==='host');
+  document.getElementById('participant-panel').classList.toggle('on',v==='participant');
+  if(v==='participant') renderParticipant();
+};
+
+buildPHouseGrid();
 </script>
 </body>
 </html>
