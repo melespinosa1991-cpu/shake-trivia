@@ -193,6 +193,7 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
   <div class="tabs">
     <button class="tab on" onclick="switchView('host')"><i class="ti ti-settings"></i> Vista host</button>
     <button class="tab" onclick="switchView('participant')"><i class="ti ti-user"></i> Vista participante</button>
+    <button class="tab" onclick="switchView('cuentas')"><i class="ti ti-sandwich"></i> Cuentas</button>
   </div>
 
   <!-- HOST PANEL -->
@@ -279,6 +280,13 @@ body{font-family:var(--font);background:var(--bg);min-height:100vh;display:flex;
     </div>
     <div id="participant-content"></div>
   </div>
+</div>
+
+  <!-- CUENTAS PANEL -->
+  <div class="panel" id="cuentas-panel">
+    <div id="cuentas-content"></div>
+  </div>
+
 </div>
 
 <script type="module">
@@ -617,13 +625,369 @@ function saveScore() {
 
 // ======== VIEW SWITCH ========
 window.switchView = function(v) {
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',(v==='host'&&i===0)||(v==='participant'&&i===1)));
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('on',(v==='host'&&i===0)||(v==='participant'&&i===1)||(v==='cuentas'&&i===2)));
   document.getElementById('host-panel').classList.toggle('on',v==='host');
   document.getElementById('participant-panel').classList.toggle('on',v==='participant');
+  document.getElementById('cuentas-panel').classList.toggle('on',v==='cuentas');
   if(v==='participant') renderParticipant();
+  if(v==='cuentas') initCuentas();
 };
 
 buildPHouseGrid();
+
+// ============================================================
+// CUENTAS — El laberinto del cliente
+// ============================================================
+const SITUACIONES = [
+  {
+    id:0,
+    titulo:'El pedido imposible',
+    desc:'El cliente quiere un sándwich "saludable pero contundente, barato pero premium, y para dentro de 10 minutos".',
+    obstaculos:['Scope\nCreep','Pedido\nUrgente','Cliente\nEnojado','Upsell\nPosible'],
+    opts:['Le decís que sí a todo para no perderlo.','Le decís que es imposible y listo.','Le ofrecés una opción concreta priorizando lo que más le importa, y aclarás qué queda para una segunda etapa.','Le pasás el pedido a la cocina tal cual, sin filtrar.'],
+    correct:2
+  },
+  {
+    id:1,
+    titulo:'Fuera de scope',
+    desc:'A mitad del pedido, el cliente suma: "ah, y de paso hacéme también una ensalada y un postre".',
+    obstaculos:['Scope\nCreep','Cliente\nUrgente','Pedido\nAmbiguo','Presión\nInterna'],
+    opts:['Lo hacés gratis para quedar bien.','Le decís que eso no estaba pactado y cortás.','Encantados, eso es un pedido aparte: te paso presupuesto y lo sumamos.','Lo ignorás y seguís con lo tuyo.'],
+    correct:2
+  },
+  {
+    id:2,
+    titulo:'La oportunidad',
+    desc:'El cliente está contento con su sándwich.',
+    obstaculos:['Upsell\nPosible','Miedo\nal No','Apuro\ndel día','Scope\nCreep'],
+    opts:['No decís nada, ya está cerrado.','Ya que estás, le sumás papas y bebida y te queda el combo completo.','Le ofrecés 5 cosas más de una.','Le bajás el precio sin que te lo pida.'],
+    correct:1
+  },
+  {
+    id:3,
+    titulo:'El reclamo',
+    desc:'El cliente vuelve enojado: "esto no es lo que pedí".',
+    obstaculos:['Cliente\nEnojado','Ego\npropio','Derivar\nal otro','Promesa\nVacía'],
+    opts:['Discutís y le demostrás que él se equivocó.','Escuchás, reconocés, y proponés una solución concreta ya.','Le pedís disculpas y nada más.','Lo derivás a otra persona.'],
+    correct:1
+  }
+];
+
+// Laberinto: 15x11 grid. 0=camino, 1=pared, 2=obstaculo, 3=inicio, 4=fin
+// Generamos un laberinto fijo con camino garantizado
+function getMaze(obstaculos) {
+  // 13 cols x 9 rows
+  const W=13, H=9;
+  const m = [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,3,0,0,1,0,0,0,1,0,0,0,1],
+    [1,0,1,0,1,0,1,0,0,0,1,0,1],
+    [1,0,1,0,0,0,1,1,1,0,1,0,1],
+    [1,0,1,1,1,0,0,0,1,0,0,0,1],
+    [1,0,0,0,1,1,1,0,1,1,1,0,1],
+    [1,1,1,0,0,0,1,0,0,0,1,0,1],
+    [1,0,0,0,1,0,0,0,1,0,0,4,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1],
+  ];
+  // Place 4 obstacles on open cells (not start/end)
+  const openCells = [];
+  for(let r=1;r<H-1;r++) for(let c=1;c<W-1;c++) if(m[r][c]===0) openCells.push([r,c]);
+  // Pick 4 spread cells
+  const step = Math.floor(openCells.length/4);
+  for(let i=0;i<4;i++){
+    const [r,c] = openCells[i*step+2];
+    m[r][c] = 2;
+  }
+  return {grid:m, W, H, obstaculos};
+}
+
+let cuentasState = {
+  screen: 'intro', // intro | maze | question | result | final
+  situacion: 0,
+  mazeData: null,
+  playerPos: null,
+  reachedEnd: false,
+  timerLeft: 25,
+  timerIv: null,
+  selectedAns: null,
+  scores: [], // per situacion: {reached, correct}
+  totalScore: 0
+};
+
+function initCuentas() {
+  cuentasState = {screen:'intro',situacion:0,mazeData:null,playerPos:null,reachedEnd:false,timerLeft:25,timerIv:null,selectedAns:null,scores:[],totalScore:0};
+  renderCuentas();
+}
+
+function renderCuentas() {
+  const el = document.getElementById('cuentas-content');
+  if(!el) return;
+  const s = cuentasState;
+
+  if(s.screen==='intro') {
+    el.innerHTML = `
+      <div style="text-align:center;padding:1.5rem 1rem">
+        <div style="font-size:40px;margin-bottom:12px">🥪</div>
+        <div style="font-size:20px;font-weight:500;color:var(--text);margin-bottom:8px">Embocá y resolvé</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:6px;max-width:400px;margin-left:auto;margin-right:auto">
+          Cuentas es la cara con el cliente. Navegá el laberinto sorteando obstáculos del cliente y llegá al final para desbloquear cada pregunta.
+        </div>
+        <div style="background:var(--surface2);border-radius:var(--r);padding:12px;margin:16px 0;font-size:12px;color:var(--text2);line-height:1.8;text-align:left;max-width:380px;margin-left:auto;margin-right:auto">
+          <strong style="color:var(--text)">Puntaje:</strong><br>
+          🏆 Llegás + respondés bien → <strong>1 punto</strong><br>
+          ✅ No llegás pero respondés bien → <strong>0.5 puntos</strong><br>
+          ⚡ Llegás pero respondés mal → <strong>0.5 puntos</strong><br>
+          ❌ No llegás y respondés mal → <strong>0 puntos</strong>
+        </div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:20px">Usá las flechas del teclado para moverte · 25 segundos por nivel</div>
+        <button onclick="startMaze()" style="padding:12px 32px;border-radius:var(--r);border:none;background:var(--green);color:#fff;font-size:14px;font-family:var(--font);font-weight:500;cursor:pointer">
+          ¡Arrancar! 🚀
+        </button>
+      </div>`;
+    return;
+  }
+
+  if(s.screen==='maze') {
+    const sit = SITUACIONES[s.situacion];
+    const {grid, W, H} = s.mazeData;
+    const CELL = 36;
+    let mazeHtml = `<div id="maze-grid" style="display:grid;grid-template-columns:repeat(${W},${CELL}px);gap:2px;margin:0 auto;width:fit-content;user-select:none">`;
+    for(let r=0;r<H;r++) for(let c=0;c<W;c++) {
+      const isPlayer = s.playerPos[0]===r && s.playerPos[1]===c;
+      const cell = grid[r][c];
+      let bg='#f1f3f0', content='', title='';
+      if(cell===1) bg='#2d3a2e';
+      else if(cell===3) {bg='#E1F5EE';}
+      else if(cell===4) {bg='#1D9E75'; content='🏁';}
+      else if(cell===2) {
+        bg='#FAEEDA';
+        const obsIdx = getObsIdx(r,c,s.mazeData);
+        const obsLabel = sit.obstaculos[obsIdx] || '⚠️';
+        content = `<span style="font-size:9px;color:#633806;font-weight:500;text-align:center;line-height:1.1;white-space:pre">${obsLabel}</span>`;
+      }
+      if(isPlayer) { bg='#185FA5'; content='🧑'; }
+      mazeHtml += `<div style="width:${CELL}px;height:${CELL}px;background:${bg};border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px">${content}</div>`;
+    }
+    mazeHtml += '</div>';
+
+    const timerColor = s.timerLeft<=8?'#A32D2D':s.timerLeft<=15?'#BA7517':'var(--green-dark)';
+
+    el.innerHTML = `
+      <div style="padding:12px 16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px">Situación ${s.situacion+1} de 4</div>
+            <div style="font-size:15px;font-weight:500;color:var(--text)">${sit.titulo}</div>
+          </div>
+          <div style="text-align:center;background:var(--surface2);border-radius:var(--r);padding:8px 14px">
+            <div style="font-size:22px;font-weight:500;color:${timerColor};font-family:var(--mono)">${String(s.timerLeft).padStart(2,'0')}</div>
+            <div style="font-size:10px;color:var(--text3)">segundos</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:12px;line-height:1.5">${sit.desc}</div>
+        <div style="overflow-x:auto;padding-bottom:8px">${mazeHtml}</div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text3);text-align:center">
+          Usá las flechas ← ↑ → ↓ del teclado · Llegá hasta 🏁
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px;font-size:11px">
+          <div style="background:#2d3a2e;color:#fff;padding:5px;border-radius:6px;text-align:center">Pared</div>
+          <div style="background:#FAEEDA;color:#633806;padding:5px;border-radius:6px;text-align:center">Obstáculo</div>
+          <div style="background:#1D9E75;color:#fff;padding:5px;border-radius:6px;text-align:center">Meta 🏁</div>
+        </div>
+      </div>`;
+    focusMaze();
+    return;
+  }
+
+  if(s.screen==='question') {
+    const sit = SITUACIONES[s.situacion];
+    const reached = s.reachedEnd;
+    el.innerHTML = `
+      <div style="padding:16px">
+        <div style="background:${reached?'var(--green-light)':'var(--surface2)'};border-radius:var(--r);padding:10px 14px;margin-bottom:14px;font-size:13px;color:${reached?'var(--green-darker)':'var(--text2)'};display:flex;align-items:center;gap:8px">
+          ${reached?'<i class="ti ti-check" style="color:var(--green-dark)"></i> ¡Llegaste al final! Ahora respondé la pregunta.':'<i class="ti ti-clock"></i> Se acabó el tiempo. Igual podés responder (vale 0.5 si acertás).'}
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Situación ${s.situacion+1} — ${sit.titulo}</div>
+        <div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px">${sit.desc}</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${sit.opts.map((o,i)=>`
+            <button onclick="selectCuentasAns(${i})" style="display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:var(--r);border:${s.selectedAns===i?'1.5px solid var(--blue-dark)':'1px solid var(--border)'};background:${s.selectedAns===i?'var(--blue-light)':'var(--surface)'};cursor:pointer;font-size:13px;color:${s.selectedAns===i?'var(--blue-darker)':'var(--text)'};font-family:var(--font);text-align:left;width:100%;line-height:1.4;transition:all .15s">
+              <span style="font-weight:500;min-width:18px">${['A','B','C','D'][i]}</span><span>${o}</span>
+            </button>`).join('')}
+        </div>
+        ${s.selectedAns!==null?`<button onclick="confirmCuentasAns()" style="margin-top:14px;width:100%;padding:11px;border-radius:var(--r);border:none;background:var(--green);color:#fff;font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer">Confirmar respuesta →</button>`:''}
+      </div>`;
+    return;
+  }
+
+  if(s.screen==='result') {
+    const sit = SITUACIONES[s.situacion];
+    const reached = s.reachedEnd;
+    const correct = s.selectedAns===sit.correct;
+    let pts = 0;
+    if(reached&&correct) pts=1;
+    else if(!reached&&correct) pts=0.5;
+    else if(reached&&!correct) pts=0.5;
+    const letters = ['A','B','C','D'];
+    el.innerHTML = `
+      <div style="padding:16px">
+        <div style="text-align:center;padding:1rem 0 .5rem">
+          <div style="font-size:32px">${correct?'✅':'❌'}</div>
+          <div style="font-size:16px;font-weight:500;color:var(--text);margin-top:6px">${correct?'¡Respuesta correcta!':'Respuesta incorrecta'}</div>
+          <div style="font-size:28px;font-weight:500;color:var(--green-dark);margin:6px 0">+${pts} punto${pts!==1?'s':''}</div>
+          <div style="font-size:12px;color:var(--text3)">${reached?'Llegaste al laberinto':'No llegaste al laberinto'} · ${correct?'Respuesta correcta':'Respuesta incorrecta'}</div>
+        </div>
+        <div style="background:var(--green-light);border-left:3px solid var(--green);border-radius:0 var(--r) var(--r) 0;padding:12px 14px;margin:14px 0;font-size:13px;color:var(--green-darker);line-height:1.6">
+          <strong>Respuesta correcta: ${letters[sit.correct]})</strong> ${sit.opts[sit.correct]}<br><br>
+          <strong>Enseñanza Shake:</strong> ${getEnseñanza(s.situacion)}
+        </div>
+        <button onclick="nextSituacion()" style="width:100%;padding:11px;border-radius:var(--r);border:none;background:${s.situacion<3?'var(--green)':'#185FA5'};color:#fff;font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer">
+          ${s.situacion<3?'Siguiente situación →':'Ver resultado final 🏆'}
+        </button>
+      </div>`;
+    return;
+  }
+
+  if(s.screen==='final') {
+    const total = s.totalScore;
+    const medal = total>=3.5?'🥇':total>=2?'🥈':'🥉';
+    const msg = total>=3.5?'¡Excelente! Sos un crack de Cuentas en Shake.':total>=2?'Buen trabajo, vas bien encaminado.':'Seguimos practicando juntos.';
+    el.innerHTML = `
+      <div style="text-align:center;padding:2rem 1rem;background:var(--green-light);border-radius:var(--rl);margin:12px 0">
+        <div style="font-size:48px;margin-bottom:8px">${medal}</div>
+        <div style="font-size:20px;font-weight:500;color:var(--green-darker);margin-bottom:4px">¡Trivia de Cuentas terminada!</div>
+        <div style="font-size:40px;font-weight:500;color:var(--green-darker);margin:12px 0 4px">${total} / 4</div>
+        <div style="font-size:14px;color:var(--green-dark);margin-bottom:20px">${msg}</div>
+        <div style="background:#fff;border-radius:var(--r);padding:14px;margin-bottom:16px;text-align:left">
+          ${s.scores.map((sc,i)=>`
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:${i<3?'1px solid var(--border)':'none'}">
+              <span style="font-size:13px;color:var(--text)">${SITUACIONES[i].titulo}</span>
+              <span style="font-size:13px;font-weight:500;color:${sc.pts>0?'var(--green-dark)':'var(--text3)'}">+${sc.pts} pt${sc.pts!==1?'s':''}</span>
+            </div>`).join('')}
+        </div>
+        <button onclick="initCuentas()" style="padding:10px 28px;border-radius:var(--r);border:1px solid var(--green-dark);background:transparent;color:var(--green-dark);font-size:13px;font-family:var(--font);font-weight:500;cursor:pointer">
+          Jugar de nuevo
+        </button>
+      </div>`;
+  }
+}
+
+function getEnseñanza(idx) {
+  const ens = [
+    'Un buen Account no dice sí a todo ni corta todo. Prioriza con criterio, propone alternativas concretas y cuida la relación sin perder el scope.',
+    'El scope creep es el enemigo silencioso de la rentabilidad. Un buen Account lo detecta, lo nombra y lo convierte en una oportunidad de negocio.',
+    'Un cliente contento es una puerta abierta. El upsell no es vender de más, es ofrecerle valor real en el momento justo.',
+    'Los clientes recuerdan cómo los trataste cuando algo salió mal. Escuchar, reconocer y resolver rápido es la jugada ganadora.'
+  ];
+  return ens[idx];
+}
+
+function getObsIdx(r,c,mazeData) {
+  return mazeData.obsPositions.findIndex(p=>p[0]===r&&p[1]===c);
+}
+
+function startMaze() {
+  cuentasState.situacion = 0;
+  cuentasState.scores = [];
+  cuentasState.totalScore = 0;
+  loadMaze();
+}
+
+function loadMaze() {
+  const s = cuentasState;
+  const sit = SITUACIONES[s.situacion];
+  const W=13, H=9;
+  const baseGrid = [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,3,0,0,1,0,0,0,1,0,0,0,1],
+    [1,0,1,0,1,0,1,0,0,0,1,0,1],
+    [1,0,1,0,0,0,1,1,1,0,1,0,1],
+    [1,0,1,1,1,0,0,0,1,0,0,0,1],
+    [1,0,0,0,1,1,1,0,1,1,1,0,1],
+    [1,1,1,0,0,0,1,0,0,0,1,0,1],
+    [1,0,0,0,1,0,0,0,1,0,0,4,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1],
+  ];
+  // Deep copy
+  const grid = baseGrid.map(r=>[...r]);
+  // Obstacle positions (open cells, spread out)
+  const obsPositions = [[2,5],[4,7],[6,3],[5,9]];
+  obsPositions.forEach(([r,c])=>{ grid[r][c]=2; });
+  s.mazeData = {grid, W, H, obsPositions};
+  s.playerPos = [1,1]; // start
+  s.reachedEnd = false;
+  s.timerLeft = 25;
+  s.selectedAns = null;
+  s.screen = 'maze';
+  clearInterval(s.timerIv);
+  s.timerIv = setInterval(()=>{
+    cuentasState.timerLeft--;
+    if(cuentasState.timerLeft<=0){
+      clearInterval(cuentasState.timerIv);
+      cuentasState.screen='question';
+    }
+    renderCuentas();
+  },1000);
+  renderCuentas();
+}
+
+function focusMaze() {
+  // Keyboard listener
+  document.onkeydown = function(e) {
+    if(cuentasState.screen!=='maze') return;
+    const moves = {ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]};
+    const d = moves[e.key];
+    if(!d) return;
+    e.preventDefault();
+    const [r,c] = cuentasState.playerPos;
+    const [dr,dc] = d;
+    const nr=r+dr, nc=c+dc;
+    const {grid,W,H} = cuentasState.mazeData;
+    if(nr<0||nr>=H||nc<0||nc>=W) return;
+    if(grid[nr][nc]===1) return; // wall
+    cuentasState.playerPos=[nr,nc];
+    if(grid[nr][nc]===4) {
+      // reached end
+      clearInterval(cuentasState.timerIv);
+      cuentasState.reachedEnd=true;
+      cuentasState.screen='question';
+    }
+    renderCuentas();
+  };
+}
+
+window.selectCuentasAns = function(i) {
+  cuentasState.selectedAns = i;
+  renderCuentas();
+};
+
+window.confirmCuentasAns = function() {
+  const s = cuentasState;
+  const sit = SITUACIONES[s.situacion];
+  const correct = s.selectedAns===sit.correct;
+  let pts=0;
+  if(s.reachedEnd&&correct) pts=1;
+  else if(!s.reachedEnd&&correct) pts=0.5;
+  else if(s.reachedEnd&&!correct) pts=0.5;
+  s.scores.push({reached:s.reachedEnd,correct,pts});
+  s.totalScore = Math.round((s.totalScore+pts)*10)/10;
+  s.screen='result';
+  document.onkeydown=null;
+  renderCuentas();
+};
+
+window.nextSituacion = function() {
+  const s = cuentasState;
+  if(s.situacion<3){
+    s.situacion++;
+    loadMaze();
+  } else {
+    s.screen='final';
+    renderCuentas();
+  }
+};
+
+window.initCuentas = initCuentas;
 </script>
 </body>
 </html>
