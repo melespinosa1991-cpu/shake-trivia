@@ -976,7 +976,7 @@ window.confirmCuentasAns = function() {
   renderCuentas();
 };
 
-window.nextSituacion = function() {
+function nextSituacion() {
   const s = cuentasState;
   if(s.situacion<3){
     s.situacion++;
@@ -988,6 +988,10 @@ window.nextSituacion = function() {
 };
 
 window.initCuentas = initCuentas;
+window.startMaze = startMaze;
+window.loadMaze = loadMaze;
+window.nextSituacion = nextSituacion;
+window.renderCuentas = renderCuentas;
 </script>
 </body>
 </html>
