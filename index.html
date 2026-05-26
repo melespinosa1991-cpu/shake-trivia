@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shake Trivia — Interconectados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-darker: #085041;
+    --green-light: #E1F5EE;
+    --green-mid: #9FE1CB;
+    --blue: #378ADD;
+    --blue-dark: #185FA5;
+    --blue-darker: #0C447C;
+    --blue-light: #E6F1FB;
+    --red-light: #FCEBEB;
+    --red-dark: #791F1F;
+    --red-border: #A32D2D;
+    --bg: #f7f8f6;
+    --surface: #ffffff;
+    --surface2: #f2f4f1;
+    --border: rgba(0,0,0,0.1);
+    --border-md: rgba(0,0,0,0.18);
+    --text: #1a1a1a;
+    --text2: #555;
+    --text3: #999;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 680px;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  }
+
+  /* HEADER */
+  .shake-header {
+    background: var(--green);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .shake-logo { font-size: 22px; font-weight: 500; color: #fff; letter-spacing: -0.5px; }
+  .shake-logo span { color: var(--green-mid); }
+  .shake-subtitle { font-size: 11px; color: var(--green-mid); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+  .header-icon { font-size: 22px; color: var(--green-mid); }
+
+  /* TABS */
+  .view-toggle {
+    display: flex;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .toggle-btn {
+    flex: 1; padding: 11px; border: none; background: transparent;
+    cursor: pointer; font-size: 13px; color: var(--text2); font-family: var(--font);
+    letter-spacing: 0.3px; transition: all 0.15s; border-bottom: 2px solid transparent;
+  }
+  .toggle-btn.active {
+    color: var(--green-dark); border-bottom: 2px solid var(--green);
+    background: var(--surface); font-weight: 500;
+  }
+  .toggle-btn i { font-size: 14px; vertical-align: -2px; margin-right: 4px; }
+
+  /* VIEWS */
+  .host-view, .participant-view { padding: 16px; display: none; }
+  .host-view.visible, .participant-view.visible { display: block; }
+
+  /* SECTION LABELS */
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.8px;
+    text-transform: uppercase; margin-bottom: 7px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .finance-label { color: var(--blue-dark); }
+  .people-label { color: var(--green-dark); }
+
+  /* Q GRID */
+  .q-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; margin-bottom: 14px; }
+  .q-btn {
+    padding: 8px 4px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; font-size: 11px; font-family: var(--font);
+    text-align: center; transition: all 0.15s; color: var(--text2); line-height: 1.3;
+  }
+  .q-btn:hover { background: var(--surface2); }
+  .q-btn.finance-btn { border-top: 3px solid var(--blue); border-radius: 0 0 var(--radius) var(--radius); }
+  .q-btn.people-btn { border-top: 3px solid var(--green); border-radius: 0 0 var(--radius) var(--radius); }
+  .q-btn.active-q.finance-btn { border: 2px solid var(--blue-dark); border-top: 3px solid var(--blue); background: var(--blue-light); color: var(--blue-darker); }
+  .q-btn.active-q.people-btn { border: 2px solid var(--green-dark); border-top: 3px solid var(--green); background: var(--green-light); color: var(--green-darker); }
+  .q-btn.answered { opacity: 0.38; }
+  .q-num { font-size: 14px; font-weight: 500; display: block; margin-bottom: 2px; }
+
+  /* HOST CARD */
+  .host-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px; margin: 12px 0;
+  }
+  .area-pill {
+    display: inline-block; font-size: 11px; padding: 3px 10px;
+    border-radius: 20px; font-weight: 500; margin-bottom: 10px;
+  }
+  .finance-pill { background: var(--blue-light); color: var(--blue-darker); }
+  .people-pill { background: var(--green-light); color: var(--green-darker); }
+  .q-meta { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+  .q-title { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+  .q-body { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 16px; }
+
+  .options-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+  .opt-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius);
+    border: 1px solid var(--border); font-size: 13px; color: var(--text); line-height: 1.45;
+  }
+  .opt-row.correct-ans { background: var(--green-light); border-color: var(--green-dark); color: var(--green-darker); }
+  .opt-letter { font-weight: 500; min-width: 16px; flex-shrink: 0; }
+
+  .reveal-btn {
+    width: 100%; padding: 10px; border-radius: var(--radius);
+    border: 1.5px solid var(--green); background: transparent;
+    cursor: pointer; font-size: 13px; color: var(--green-dark);
+    font-family: var(--font); font-weight: 500; transition: all 0.15s; margin-bottom: 10px;
+  }
+  .reveal-btn:hover { background: var(--green-light); }
+  .reveal-btn:disabled { border-color: var(--border); color: var(--text3); cursor: not-allowed; background: transparent; }
+
+  .teaching-box {
+    background: var(--green-light); border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 12px 14px; font-size: 13px; color: var(--green-darker);
+    line-height: 1.6; display: none; border-left: 3px solid var(--green);
+  }
+  .teaching-box.visible { display: block; }
+  .teaching-box strong { color: #04342C; }
+
+  .nav-row { display: flex; gap: 8px; }
+  .nav-btn {
+    flex: 1; padding: 10px; border-radius: var(--radius);
+    border: 1px solid var(--border-md); background: transparent;
+    cursor: pointer; font-size: 13px; color: var(--text);
+    font-family: var(--font); transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--surface2); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .nav-btn i { font-size: 14px; vertical-align: -2px; }
+
+  /* PARTICIPANT */
+  .timer-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--green); border-radius: var(--radius-lg);
+    padding: 14px 18px; margin-bottom: 12px;
+  }
+  .timer-lbl { font-size: 11px; color: var(--green-mid); letter-spacing: 0.5px; margin-bottom: 2px; }
+  .timer-lbl i { font-size: 13px; vertical-align: -2px; margin-right: 3px; }
+  .timer-display { font-size: 30px; font-weight: 500; color: #fff; font-family: var(--mono); letter-spacing: 3px; }
+  .t-btn {
+    padding: 6px 12px; border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.35); background: transparent;
+    cursor: pointer; font-size: 13px; color: #fff; font-family: var(--font);
+    transition: all 0.15s;
+  }
+  .t-btn:hover { background: rgba(255,255,255,0.15); }
+  .t-controls { display: flex; gap: 6px; }
+
+  .score-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 12px; }
+  .score-card { background: var(--surface2); border-radius: var(--radius); padding: 10px; text-align: center; }
+  .score-num { font-size: 24px; font-weight: 500; color: var(--text); }
+  .score-num.green { color: var(--green-dark); }
+  .score-num.red { color: var(--red-border); }
+  .score-lbl { font-size: 11px; color: var(--text3); }
+
+  .progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .progress-bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.4s; }
+  .progress-txt { font-size: 12px; color: var(--text3); white-space: nowrap; }
+
+  .p-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 20px; margin-bottom: 10px;
+  }
+  .p-options { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; }
+  .p-opt {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px; border-radius: var(--radius); border: 1px solid var(--border);
+    cursor: pointer; font-size: 13px; color: var(--text); line-height: 1.45;
+    transition: all 0.15s; background: var(--surface); font-family: var(--font);
+    text-align: left; width: 100%;
+  }
+  .p-opt:hover:not(:disabled) { background: var(--surface2); border-color: var(--border-md); }
+  .p-opt.selected { border: 1.5px solid var(--blue-dark); background: var(--blue-light); color: var(--blue-darker); }
+  .p-opt.correct-reveal { background: var(--green-light); border: 1.5px solid var(--green-dark); color: var(--green-darker); }
+  .p-opt.wrong-reveal { background: var(--red-light); border: 1.5px solid var(--red-border); color: var(--red-dark); }
+
+  .status-chip {
+    display: flex; align-items: center; gap: 7px;
+    padding: 9px 12px; border-radius: var(--radius);
+    font-size: 13px; margin-top: 10px;
+  }
+  .chip-ok { background: var(--green-light); color: var(--green-darker); }
+  .chip-no { background: var(--red-light); color: var(--red-dark); }
+  .chip-wait { background: var(--surface2); color: var(--text2); }
+
+  .wait-screen { text-align: center; padding: 2.5rem 1rem; }
+  .wait-icon { font-size: 36px; color: var(--green-mid); margin-bottom: 12px; }
+  .wait-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .wait-sub { font-size: 13px; color: var(--text3); }
+
+  /* FINISHED */
+  .finished-screen {
+    text-align: center; padding: 2.5rem 1rem;
+    background: var(--green-light); border-radius: var(--radius-lg); margin-bottom: 10px;
+  }
+  .finished-icon { font-size: 40px; color: var(--green); margin-bottom: 10px; }
+  .finished-title { font-size: 20px; font-weight: 500; color: var(--green-darker); margin-bottom: 6px; }
+  .finished-sub { font-size: 14px; color: var(--green-dark); }
+  .finished-score { font-size: 36px; font-weight: 500; color: var(--green-darker); margin: 12px 0 4px; }
+
+  @media (max-width: 480px) {
+    body { padding: 12px 8px 32px; }
+    .q-btn { font-size: 10px; }
+    .timer-display { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="shake-header">
+    <div>
+      <div class="shake-logo">shake<span>.</span>trivia</div>
+      <div class="shake-subtitle">Interconectados &nbsp;·&nbsp; Finance & People</div>
+    </div>
+    <i class="ti ti-trophy header-icon" aria-hidden="true"></i>
+  </div>
+
+  <div class="view-toggle">
+    <button class="toggle-btn active" onclick="switchView('host')">
+      <i class="ti ti-settings"></i> Vista host
+    </button>
+    <button class="toggle-btn" onclick="switchView('participant')">
+      <i class="ti ti-user"></i> Vista participante
+    </button>
+  </div>
+
+  <!-- HOST VIEW -->
+  <div class="host-view visible" id="host-view">
+    <div class="section-label finance-label" style="margin-top:4px">
+      <i class="ti ti-coin" style="font-size:14px"></i> Finance
+    </div>
+    <div class="q-grid" id="finance-grid"></div>
+    <div class="section-label people-label">
+      <i class="ti ti-users" style="font-size:14px"></i> People
+    </div>
+    <div class="q-grid" id="people-grid"></div>
+
+    <div class="host-card" id="host-card">
+      <div class="wait-screen" style="padding:1.5rem">
+        <div class="wait-icon"><i class="ti ti-cards"></i></div>
+        <div class="wait-title">Seleccioná una pregunta para comenzar</div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="nav-btn" onclick="hostNav(-1)" id="prev-btn" disabled>
+        <i class="ti ti-arrow-left"></i> Anterior
+      </button>
+      <button class="nav-btn" onclick="hostNav(1)" id="next-btn" disabled>
+        Siguiente <i class="ti ti-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- PARTICIPANT VIEW -->
+  <div class="participant-view" id="participant-view">
+    <div class="timer-bar">
+      <div>
+        <div class="timer-lbl"><i class="ti ti-clock"></i> tiempo total</div>
+        <div class="timer-display" id="timer-display">00:00</div>
+      </div>
+      <div class="t-controls">
+        <button class="t-btn" onclick="startTimer()" title="Iniciar"><i class="ti ti-player-play"></i></button>
+        <button class="t-btn" onclick="pauseTimer()" title="Pausar"><i class="ti ti-player-pause"></i></button>
+        <button class="t-btn" onclick="resetTimer()" title="Reiniciar"><i class="ti ti-refresh"></i></button>
+      </div>
+    </div>
+
+    <div class="score-row">
+      <div class="score-card">
+        <div class="score-num green" id="sc-ok">0</div>
+        <div class="score-lbl">Correctas</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num red" id="sc-no">0</div>
+        <div class="score-lbl">Incorrectas</div>
+      </div>
+      <div class="score-card">
+        <div class="score-num" id="sc-rem">10</div>
+        <div class="score-lbl">Restantes</div>
+      </div>
+    </div>
+
+    <div class="progress-row">
+      <div class="progress-bar">
+        <div class="progress-fill" id="p-fill" style="width:0%"></div>
+      </div>
+      <span class="progress-txt" id="p-txt">0 / 10</span>
+    </div>
+
+    <div id="participant-content"></div>
+  </div>
+</div>
+
+<script>
+const QQ = [
+  {area:'Finance',num:1,title:'El mito del presupuesto',text:'Cuando un equipo le pide presupuesto a Finance para una nueva herramienta o proyecto y la respuesta es un "no", ¿cuál suele ser la razón real?',opts:['Que Finance busca recortar costos al máximo para aumentar artificialmente la ganancia del mes.','Que el área de People sugirió postergar ese gasto para priorizar actividades de clima.','Que el gasto no está alineado a la planificación estratégica o no se demostró su retorno (ROI).'],correct:2,teaching:'Finance no cuida la plata prohibiendo gastar, sino asegurando que cada inversión genere valor. No es un "no" caprichoso; es un "mostrame cómo esto ayuda al crecimiento de Shake".'},
+  {area:'Finance',num:2,title:'Cobranzas vs. Ventas',text:'¿Por qué un retraso en las cobranzas afecta a toda la empresa aunque el equipo de ventas haya roto récords de contratos cerrados?',opts:['Porque las ventas no cobradas se borran de la contabilidad al mes siguiente.','Porque impacta directamente en la liquidez (disponibilidad real de dinero) para operar.','Porque obliga al equipo de Finance a rehacer los reportes financieros desde cero.'],correct:1,teaching:'Vender es solo la mitad del camino; la salud de la empresa depende de la caja. Sin efectivo real (liquidez), no se pueden pagar sueldos ni proveedores, por más ventas que existan.'},
+  {area:'Finance',num:3,title:'El dolor de las fechas límite',text:'¿Por qué Finance es tan estricto con las fechas de entrega de rendiciones de gastos o facturas (ej. "los 25 de cada mes")?',opts:['Porque los sistemas contables se bloquean y borran la información si no se carga a tiempo.','Porque los cierres contables y las presentaciones ante entes como AFIP tienen fechas legales improrrogables.','Porque necesitan congelar las cuentas para que los reportes salgan siempre con números redondos.'],correct:1,teaching:'El orden de Finance no es burocracia; es protección. Una rendición tarde puede colgar un cierre mensual, distorsionar los reportes de los directores o generar multas impositivas innecesarias para la empresa.'},
+  {area:'Finance',num:4,title:'Facturación en pausa',text:'¿Por qué Finance puede frenar la emisión de una factura aunque el trabajo para el cliente ya esté 100% terminado?',opts:['Porque necesita validar información administrativa, fiscal y contractual antes de emitirla.','Porque el sistema de facturación se bloquea automáticamente al cierre de cada mes.','Porque espera que el cliente envíe primero su orden de compra aprobada por su banco.'],correct:0,teaching:'Facturar rápido es clave, pero facturar mal cuesta el doble de tiempo. Finance cuida que el contrato, los datos fiscales y los montos sean perfectos para evitar notas de crédito o rechazos del cliente.'},
+  {area:'Finance',num:5,title:'El misterio del IVA',text:'Todos los servicios de Shake incluyen IVA. Para la empresa, ese dinero:',opts:['Forma parte de la ganancia neta del mes hasta que se transfiere.','Se registra como un pasivo / impuesto a entregar al Estado.','Se puede usar libremente para cubrir cualquier gasto operativo urgente.'],correct:1,teaching:'El IVA nunca es de la empresa; somos solo recaudadores. Entra a la cuenta bancaria, pero se registra como una deuda con el Estado hasta que llega el momento de pagarlo.'},
+  {area:'People',num:6,title:'¿Qué es la Cultura?',text:'Cuando People trabaja sobre la cultura de la empresa, ¿qué busca principalmente?',opts:['Diseñar el paquete de beneficios, los snacks de la oficina y los eventos de fin de año.','Alinear y facilitar la forma en que las personas trabajan, deciden y se relacionan.','Asegurar que todos los equipos piensen exactamente de la misma manera para evitar conflictos.'],correct:1,teaching:'La cultura no son los días libres ni los festejos; son nuestros valores en acción. People busca que compartamos una misma forma de hacer las cosas, potenciando la diversidad de ideas.'},
+  {area:'People',num:7,title:'Resolución de conflictos',text:'Cuando surge un problema de comunicación o un roce fuerte entre dos personas de un equipo, ¿qué rol debe tomar People?',opts:['Actuar como juez obligatorio, definir quién tiene la razón y aplicar una sanción.','Facilitar herramientas de conversación y mediar para que las partes (y su líder) resuelvan el conflicto.','Cambiar inmediatamente a una de las personas de área para evitar que el clima se contamine.'],correct:1,teaching:'People no es la "dirección de la escuela" que imparte castigos. Su rol es dar soporte y guiar a los líderes y colaboradores para que construyan relaciones sanas y profesionales por sí mismos.'},
+  {area:'People',num:8,title:'El termómetro del Clima',text:'Cuando People lanza una encuesta de clima o eNPS, ¿cuál es el objetivo principal de analizar esos datos?',opts:['Armar un ranking de los líderes más y menos populares de la empresa.','Tener métricas lindas para mostrar en las redes sociales de la empresa y atraer candidatos.','Identificar dolores colectivos para diseñar planes de acción junto a los líderes de cada área.'],correct:2,teaching:'La encuesta no es para cumplir, es un termómetro. El verdadero trabajo de People empieza después de los resultados, ayudando a los equipos a accionar sobre lo que les molesta o les traba el día a día.'},
+  {area:'People',num:9,title:'Feedback constante',text:'¿Por qué People impulsa espacios de feedback constantes incluso cuando los proyectos y equipos van súper bien?',opts:['Porque sostienen el crecimiento continuo, previenen problemas y mejoran la comunicación.','Porque son un requisito legal obligatorio para poder otorgar cualquier promoción o ajuste.','Porque reemplazan de manera eficiente a las reuniones semanales de seguimiento técnico.'],correct:0,teaching:'El feedback no es para "corregir lo malo", sino para potenciar lo bueno. Esperar a que algo falle para hablarlo es un error que frena el desarrollo profesional de los equipos.'},
+  {area:'People',num:10,title:'Protagonistas del Desarrollo',text:'Si una persona quiere mejorar una habilidad o crecer en su puesto en Shake, ¿cómo se gestiona habitualmente con People?',opts:['People tiene la obligación de buscar, pagar y agendar un curso específico para esa persona.','Se co-diseña un plan donde People facilita recursos, pero la persona es protagonista de su propio aprendizaje.','Se espera congelado a la evaluación de desempeño anual para ver si el líder autoriza a hacer algo.'],correct:1,teaching:'El desarrollo es una calle de doble mano. People y los líderes abren puertas y disponibilizan herramientas, pero el motor principal del crecimiento es el interés y la proactividad de cada uno.'}
+];
+
+const L = ['A','B','C'];
+let cur = -1, revealed = {}, pAns = {}, pOk = 0, pNo = 0;
+let timerSec = 0, timerOn = false, timerIv = null;
+
+function switchView(v) {
+  document.querySelectorAll('.toggle-btn').forEach((b,i) => b.classList.toggle('active',(v==='host'&&i===0)||(v==='participant'&&i===1)));
+  document.getElementById('host-view').classList.toggle('visible', v==='host');
+  document.getElementById('participant-view').classList.toggle('visible', v==='participant');
+  if (v==='participant') renderParticipant();
+}
+
+function buildGrids() {
+  ['finance-grid','people-grid'].forEach((id,gi) => {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    QQ.filter((_,i) => gi===0 ? i<5 : i>=5).forEach((q,li) => {
+      const i = gi===0 ? li : li+5;
+      const btn = document.createElement('button');
+      btn.className = 'q-btn ' + (q.area==='Finance'?'finance-btn':'people-btn') + (cur===i?' active-q':'') + (revealed[i]?' answered':'');
+      btn.innerHTML = `<span class="q-num">${q.area==='Finance'?'F':'P'}${li+1}</span>${q.title.split(' ').slice(0,2).join(' ')}`;
+      btn.onclick = () => selectQ(i);
+      el.appendChild(btn);
+    });
+  });
+}
+
+function selectQ(idx) {
+  cur = idx;
+  buildGrids();
+  renderHost();
+  document.getElementById('prev-btn').disabled = idx <= 0;
+  document.getElementById('next-btn').disabled = idx >= QQ.length-1;
+}
+
+function renderHost() {
+  if (cur < 0) return;
+  const q = QQ[cur], rv = revealed[cur];
+  const optsHtml = q.opts.map((o,i) =>
+    `<div class="opt-row ${rv&&i===q.correct?'correct-ans':''}">
+      ${rv&&i===q.correct?'<i class="ti ti-check" style="color:var(--green-dark);flex-shrink:0"></i>':''}
+      <span class="opt-letter">${L[i]}</span><span>${o}</span>
+    </div>`
+  ).join('');
+  document.getElementById('host-card').innerHTML = `
+    <span class="area-pill ${q.area==='Finance'?'finance-pill':'people-pill'}">${q.area}</span>
+    <div class="q-meta">Pregunta ${q.num} de 10</div>
+    <div class="q-title">${q.title}</div>
+    <div class="q-body">${q.text}</div>
+    <div class="options-list">${optsHtml}</div>
+    <button class="reveal-btn" onclick="doReveal()" ${rv?'disabled':''}>
+      ${rv?'<i class="ti ti-check"></i> Respuesta revelada':'<i class="ti ti-eye"></i> Revelar respuesta correcta'}
+    </button>
+    <div class="teaching-box ${rv?'visible':''}" id="tbox">
+      <strong>Enseñanza Shake:</strong> ${q.teaching}
+    </div>
+  `;
+}
+
+function doReveal() {
+  if (cur < 0) return;
+  revealed[cur] = true;
+  renderHost(); buildGrids(); renderParticipant();
+}
+
+function hostNav(d) { const n=cur+d; if(n>=0&&n<QQ.length) selectQ(n); }
+
+function renderParticipant() {
+  const cont = document.getElementById('participant-content');
+  const ans = Object.keys(pAns).length;
+  document.getElementById('p-fill').style.width = Math.round(ans/10*100)+'%';
+  document.getElementById('p-txt').textContent = ans+' / 10';
+  document.getElementById('sc-ok').textContent = pOk;
+  document.getElementById('sc-no').textContent = pNo;
+  document.getElementById('sc-rem').textContent = 10-ans;
+
+  if (ans === 10 && Object.keys(revealed).length === 10) {
+    cont.innerHTML = `
+      <div class="finished-screen">
+        <div class="finished-icon"><i class="ti ti-trophy"></i></div>
+        <div class="finished-title">¡Trivia terminada!</div>
+        <div class="finished-score">${pOk} / 10</div>
+        <div class="finished-sub">${pOk>=8?'¡Excelente trabajo en Shake!':pOk>=5?'¡Buen resultado!':'Seguimos aprendiendo juntos.'}</div>
+      </div>`;
+    return;
+  }
+
+  if (cur < 0) {
+    cont.innerHTML = `<div class="wait-screen">
+      <div class="wait-icon"><i class="ti ti-hourglass"></i></div>
+      <div class="wait-title">Esperando al host...</div>
+      <div class="wait-sub">El juego arranca cuando el host seleccione la primera pregunta</div>
+    </div>`;
+    return;
+  }
+
+  const q = QQ[cur], rv = revealed[cur], my = pAns[cur];
+  const optsHtml = q.opts.map((o,i) => {
+    let cls = 'p-opt';
+    if (rv) { if(i===q.correct) cls+=' correct-reveal'; else if(my===i) cls+=' wrong-reveal'; }
+    else if (my===i) cls += ' selected';
+    return `<button class="${cls}" onclick="pickAns(${i})" ${rv?'disabled':''}><span class="opt-letter">${L[i]}</span><span>${o}</span></button>`;
+  }).join('');
+
+  let statusHtml = '';
+  if (rv && my!==undefined) {
+    statusHtml = my===q.correct
+      ? `<div class="status-chip chip-ok"><i class="ti ti-check"></i> ¡Correcto!</div>`
+      : `<div class="status-chip chip-no"><i class="ti ti-x"></i> Incorrecto. La respuesta era ${L[q.correct]}.</div>`;
+  } else if (rv) {
+    statusHtml = `<div class="status-chip chip-no"><i class="ti ti-x"></i> No respondiste esta pregunta.</div>`;
+  } else if (my!==undefined) {
+    statusHtml = `<div class="status-chip chip-wait"><i class="ti ti-clock"></i> Esperando que el host revele la respuesta...</div>`;
+  }
+
+  const teachHtml = rv ? `<div class="teaching-box visible" style="margin-top:12px"><strong>Enseñanza Shake:</strong> ${q.teaching}</div>` : '';
+
+  cont.innerHTML = `
+    <div class="p-card">
+      <span class="area-pill ${q.area==='Finance'?'finance-pill':'people-pill'}">${q.area}</span>
+      <div class="q-meta">Pregunta ${q.num} de 10</div>
+      <div class="q-title">${q.title}</div>
+      <div class="q-body">${q.text}</div>
+      <div class="p-options">${optsHtml}</div>
+      ${statusHtml}
+      ${teachHtml}
+    </div>`;
+}
+
+function pickAns(i) {
+  if (revealed[cur]) return;
+  const was = pAns[cur] !== undefined;
+  pAns[cur] = i;
+  if (!was) { if(i===QQ[cur].correct) pOk++; else pNo++; }
+  renderParticipant();
+}
+
+function startTimer() { if(timerOn)return; timerOn=true; timerIv=setInterval(()=>{timerSec++;upTimer();},1000); }
+function pauseTimer() { timerOn=false; clearInterval(timerIv); }
+function resetTimer() { pauseTimer(); timerSec=0; upTimer(); }
+function upTimer() {
+  const m=Math.floor(timerSec/60),s=timerSec%60;
+  document.getElementById('timer-display').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+
+buildGrids();
+renderParticipant();
+</script>
+</body>
+</html>
