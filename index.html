@@ -339,6 +339,11 @@ window.checkPw = function() {
     hostUnlocked = true;
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('host-content').style.display = 'block';
+    buildHostHouses();
+    buildGrids();
+    renderHostCard();
+    document.getElementById('prev-btn').disabled = cur <= 0;
+    document.getElementById('next-btn').disabled = cur < 0 || cur >= QQ.length-1;
   } else {
     document.getElementById('pw-error').classList.add('on');
     document.getElementById('pw-input').value = '';
